@@ -3,9 +3,9 @@ package com.hechi.niumall;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+
 /**
- * Hello world!
- *
+ * @author ccx
  */
 @SpringBootApplication
 public class NiuMallApplication

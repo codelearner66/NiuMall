@@ -14,8 +14,11 @@ public enum AppHttpCodeEnum {
     CONTENT_NOT_NULL(506, "评论内容不能为空"),
     FILE_TYPE_ERROR(507, "文件类型错误，请上传png文件"),
     FILE_SIZE_ERROR(508,"文件大小超过限制"),
-    ACCOUNT_LOCKED(600,"账号锁定"),
-    LOGIN_ERROR(505,"用户名或密码错误");
+
+    LOGIN_TIMEOUT(1001,"说明登录过期  提示重新登录"),
+    ACCOUNT_LOCKED(1002,"被锁定或封禁 提示重新登录"),
+    LOGIN_ERROR(1003,"用户名或密码错误"),
+    LOGIN_TOKEN_ERROR(1004,"用户令牌异常 提示重新登录");
 
 
     int code;
