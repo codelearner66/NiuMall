@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/NiuMall.iml" filepath="$PROJECT_DIR$/NiuMall.iml" />
+      <module fileurl="file://$PROJECT_DIR$/niuMall-base/niuMall-base.iml" filepath="$PROJECT_DIR$/niuMall-base/niuMall-base.iml" />
+      <module fileurl="file://$PROJECT_DIR$/niuMall-main/niuMall-main.iml" filepath="$PROJECT_DIR$/niuMall-main/niuMall-main.iml" />
+    </modules>
+  </component>
+</project>
