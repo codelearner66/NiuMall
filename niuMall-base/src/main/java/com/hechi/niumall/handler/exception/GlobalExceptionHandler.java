@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.LockedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -44,6 +45,11 @@ public class GlobalExceptionHandler {
     public ResponseResult lockedExceptionHAndler(LockedException e) {
         log.error("账号被锁定！{}", e.getMessage());
         return ResponseResult.errorResult(AppHttpCodeEnum.ACCOUNT_LOCKED);
+    }
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseResult HttpRequestMethodNotSupportedExceptionHander(HttpRequestMethodNotSupportedException e){
+        log.error("请求的方法不存在!{}",e.getMessage());
+        return ResponseResult.errorResult(AppHttpCodeEnum.SYSTEM_ERROR);
     }
 //@ExceptionHandler(Meth)
     //全局异常处理 开启后屏蔽所有的异常 开发时不推荐使用

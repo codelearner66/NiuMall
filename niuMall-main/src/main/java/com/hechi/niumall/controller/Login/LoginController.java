@@ -7,7 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author ccx
@@ -24,5 +27,13 @@ public class LoginController {
     @PostMapping("/login")
     public ResponseResult login(@RequestBody SysUser sysUser){
         return loginService.login(sysUser);
+    }
+    @RequestMapping("/getUserInfo")
+    public ResponseResult getUserInfo(HttpServletRequest request){
+        return  loginService.getUserInfo(request);
+    }
+    @RequestMapping("/logout")
+    public ResponseResult logout(){
+        return loginService.logout();
     }
 }

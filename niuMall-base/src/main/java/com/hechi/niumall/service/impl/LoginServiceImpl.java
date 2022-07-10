@@ -8,6 +8,7 @@ import com.hechi.niumall.service.LoginService;
 import com.hechi.niumall.utils.BeanCopyUtils;
 import com.hechi.niumall.utils.JwtUtil;
 import com.hechi.niumall.utils.RedisCache;
+import com.hechi.niumall.utils.SecurityUtils;
 import com.hechi.niumall.vo.UserInfoVo;
 import com.hechi.niumall.vo.UserLoginVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
 
 @Service
@@ -57,5 +60,42 @@ public class LoginServiceImpl implements LoginService {
         UserInfoVo userInfoVo = BeanCopyUtils.copyBean(loginUser.getUser(), UserInfoVo.class);
         UserLoginVo vo = new  UserLoginVo(jwt,userInfoVo);
         return ResponseResult.okResult(vo);
+    }
+
+    @Override
+    public ResponseResult getUserInfo(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        String token = null;
+        if (cookies != null && cookies.length > 0) {
+            for (Cookie cookie : cookies) {
+                if ("token".equals(cookie.getName())) {
+                    if((token==null|| "".equals(token))&&cookie.getValue()!=null){
+                        token=cookie.getValue();
+                    }
+                }
+            }
+        }
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        //把User转换成UserInfoVo
+        UserInfoVo userInfoVo = BeanCopyUtils.copyBean(loginUser.getUser(), UserInfoVo.class);
+        UserLoginVo vo = new  UserLoginVo(token,userInfoVo);
+        return ResponseResult.okResult(vo);
+    }
+
+    @Override
+    public ResponseResult logout() {
+        // 解析获取userid
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        //获取userid
+        Long userId = loginUser.getUser().getId();
+        //从redis中获取用户信息
+        LoginUser oldLoginUser = redisCache.getCacheObject("NMLogin:" + userId);
+        if (!oldLoginUser.isAccountNonLocked()){
+            // 被锁定或则封禁 提示重新登录
+            return ResponseResult.errorResult(AppHttpCodeEnum.ACCOUNT_LOCKED);
+        }
+        //删除redis中的用户信息
+        redisCache.deleteObject("bloglogin:" + userId);
+        return ResponseResult.okResult();
     }
 }
