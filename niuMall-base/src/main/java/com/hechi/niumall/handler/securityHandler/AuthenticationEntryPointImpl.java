@@ -23,11 +23,11 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
         authException.printStackTrace();
         //InsufficientAuthenticationException
         //BadCredentialsException
-        ResponseResult result = null;
+        ResponseResult result;
         if(authException instanceof BadCredentialsException){
-            result = ResponseResult.errorResult(AppHttpCodeEnum.LOGIN_ERROR.getCode(),authException.getMessage());
+            result = ResponseResult.errorResult(AppHttpCodeEnum.LOGIN_TOKEN_ERROR,AppHttpCodeEnum.LOGIN_TOKEN_ERROR.getMsg());
         }else if(authException instanceof InsufficientAuthenticationException){
-            result = ResponseResult.errorResult(AppHttpCodeEnum.NEED_LOGIN);
+            result = ResponseResult.errorResult(AppHttpCodeEnum.LOGIN_ERROR,"用户账号密码检验出错...");
         }else{
             result = ResponseResult.errorResult(AppHttpCodeEnum.SYSTEM_ERROR.getCode(),"认证或授权失败");
         }

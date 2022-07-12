@@ -7,6 +7,12 @@ spring:
     password: ccx2019
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
+    #  集成邮件发送
+  mail:
+    host: smtp.qq.com
+    username: chenbyf1314@foxmail.com
+    password: nioowvafbetxbdgh
+    properties.mail.smtp.ssl.enable: true #开启SSL
   redis:
     lettuce:
       pool:

@@ -19,6 +19,7 @@ public class GlobalExceptionHandler {
     public ResponseResult systemExceptionHandler(LoginException e) {
         //打印异常信息
         log.error("出现了异常！ {}", e.getMsg());
+        System.out.println("进入全局异常处理 LoginException  "+ e);
         //从异常对象中获取提示信息封装返回
         return ResponseResult.errorResult(e.getCode(), e.getMsg());
     }

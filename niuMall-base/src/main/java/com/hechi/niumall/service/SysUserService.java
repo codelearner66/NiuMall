@@ -1,6 +1,7 @@
 package com.hechi.niumall.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hechi.niumall.entity.LoginUser;
 import com.hechi.niumall.entity.SysUser;
 
 /**
@@ -11,4 +12,6 @@ import com.hechi.niumall.entity.SysUser;
  */
 public interface SysUserService extends IService<SysUser> {
     SysUser getUser();
+    LoginUser getUserByPhoneNumber(String phoneNumber);
+
 }
