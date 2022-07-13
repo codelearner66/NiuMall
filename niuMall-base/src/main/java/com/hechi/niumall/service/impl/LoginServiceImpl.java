@@ -18,8 +18,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
 
 @Service
@@ -61,27 +59,6 @@ public class LoginServiceImpl implements LoginService {
         UserLoginVo vo = new  UserLoginVo(jwt,userInfoVo);
         return ResponseResult.okResult(vo);
     }
-
-    @Override
-    public ResponseResult getUserInfo(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        String token = null;
-        if (cookies != null && cookies.length > 0) {
-            for (Cookie cookie : cookies) {
-                if ("token".equals(cookie.getName())) {
-                    if((token==null|| "".equals(token))&&cookie.getValue()!=null){
-                        token=cookie.getValue();
-                    }
-                }
-            }
-        }
-        LoginUser loginUser = SecurityUtils.getLoginUser();
-        //把User转换成UserInfoVo
-        UserInfoVo userInfoVo = BeanCopyUtils.copyBean(loginUser.getUser(), UserInfoVo.class);
-        UserLoginVo vo = new  UserLoginVo(token,userInfoVo);
-        return ResponseResult.okResult(vo);
-    }
-
     @Override
     public ResponseResult logout() {
         // 解析获取userid
@@ -98,4 +75,5 @@ public class LoginServiceImpl implements LoginService {
         redisCache.deleteObject("bloglogin:" + userId);
         return ResponseResult.okResult();
     }
+
 }

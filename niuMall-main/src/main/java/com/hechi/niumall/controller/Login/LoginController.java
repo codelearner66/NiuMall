@@ -5,8 +5,10 @@ import com.hechi.niumall.entity.SysUser;
 import com.hechi.niumall.result.ResponseResult;
 import com.hechi.niumall.service.LoginService;
 import com.hechi.niumall.service.MessageService;
+import com.hechi.niumall.service.SysUserService;
 import com.hechi.niumall.utils.MailUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.mail.MessagingException;
-import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 /**
  * @author ccx
@@ -29,7 +31,8 @@ public class LoginController {
     MessageService messageService;
     @Autowired
     LoginService loginService;
-
+     @Autowired
+     SysUserService sysUserService;
     @Autowired
     MailUtils mailUtils;
 
@@ -37,10 +40,13 @@ public class LoginController {
     public ResponseResult login(@RequestBody SysUser sysUser){
         return loginService.login(sysUser);
     }
-    @RequestMapping("/getUserInfo")
-    public ResponseResult getUserInfo(HttpServletRequest request){
-        return  loginService.getUserInfo(request);
-    }
+
+    /**
+     * 获取手机验证码
+     * @param phoneNumber
+     * @return
+     * @throws Exception
+     */
     @PostMapping("/getCode")
     public ResponseResult getCode(@RequestBody String phoneNumber) throws Exception {
         JSONObject jsonObject = JSONObject.parseObject(phoneNumber);
@@ -48,18 +54,42 @@ public class LoginController {
         messageService.sentMessage(jsonObject.get("phoneNumber").toString());
         return ResponseResult.okResult();
     }
+    /**
+     * 获取邮箱验证码
+     * @param phoneNumber
+     * @return
+     * @throws Exception
+     */
     @PostMapping("/getMailCode")
     public ResponseResult getMailCode(@RequestBody String phoneNumber) throws Exception {
         JSONObject jsonObject = JSONObject.parseObject(phoneNumber);
-        System.out.println("手机号为： "+jsonObject.get("phoneNumber").toString());
+        System.out.println("邮箱验证码：： "+jsonObject.get("phoneNumber").toString());
         messageService.sentMailCode(jsonObject.get("phoneNumber").toString());
         return ResponseResult.okResult();
     }
+    /**
+     * 登出
+     * @return
+     */
     @RequestMapping("/logout")
     public ResponseResult logout(){
         return loginService.logout();
     }
 
+    /**
+     * 判断帐号是否存在
+     * @param user
+     * @return
+     */
+    @RequestMapping("/isexist")
+    public ResponseResult isExist(@RequestBody @Valid @NonNull SysUser user){
+      return   sysUserService.isExist(user);
+    }
+
+    /**
+     * 测试发邮件
+     * @throws MessagingException
+     */
     @RequestMapping("/mail")
     public void testMail() throws MessagingException {
 //        try {

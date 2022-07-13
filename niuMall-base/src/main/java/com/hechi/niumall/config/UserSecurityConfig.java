@@ -65,13 +65,14 @@ public class UserSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        String [] passUrl={"/login", "/logout", "/register", "/getCode","/getMailCode","/isexist","/baseRegister"};
         // 定制请求的授权规则 //关闭csrf
         http.csrf().disable()
                 //关闭session
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/login", "/logout", "/register", "/getCode","/getMailCode").permitAll()
+                .antMatchers(passUrl).permitAll()
                 // 除上面外的所有请求全部需要鉴权认证
                 .anyRequest().authenticated()
                 .and().authenticationProvider(emailCodeAuthenticationProvider())

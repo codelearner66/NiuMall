@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Pattern;
 import java.util.Date;
 
 /**
@@ -33,8 +35,10 @@ public class SysUser  {
     //账号状态（0正常 1停用）
     private String status;
     //邮箱
+    @Email
     private String email;
     //手机号
+    @Pattern(regexp = "^[1][3,4,5,6,7,8,9][0-9]{9}$", message = "手机号格式有误")
     private String phonenumber;
     //用户性别（0男，1女，2未知）
     private String sex;
