@@ -32,4 +32,11 @@ public interface SysUserService extends IService<SysUser> {
      * @return
      */
     ResponseResult addUser(SysUser user);
+
+    /**
+     * 找回密码
+     * @param user
+     * @return
+     */
+    ResponseResult findpassword(SysUser user) throws Exception;
 }

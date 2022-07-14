@@ -3,101 +3,172 @@
   <component name="EasyCodeTableSetting">
     <option name="tableInfoMap">
       <map>
-        <entry key="sys_user">
+        <entry key="information_schema.COLUMN_PRIVILEGES">
           <value>
             <TableInfoDTO>
-              <option name="comment" value="用户表" />
               <option name="fullColumn">
                 <list>
                   <ColumnInfoDTO>
-                    <option name="comment" value="主键" />
+                    <option name="custom" value="false" />
+                    <option name="ext">
+                      <map />
+                    </option>
+                    <option name="name" value="grantee" />
+                    <option name="type" value="java.lang.String" />
+                  </ColumnInfoDTO>
+                  <ColumnInfoDTO>
+                    <option name="custom" value="false" />
+                    <option name="ext">
+                      <map />
+                    </option>
+                    <option name="name" value="tableCatalog" />
+                    <option name="type" value="java.lang.String" />
+                  </ColumnInfoDTO>
+                  <ColumnInfoDTO>
+                    <option name="custom" value="false" />
+                    <option name="ext">
+                      <map />
+                    </option>
+                    <option name="name" value="tableSchema" />
+                    <option name="type" value="java.lang.String" />
+                  </ColumnInfoDTO>
+                  <ColumnInfoDTO>
+                    <option name="custom" value="false" />
+                    <option name="ext">
+                      <map />
+                    </option>
+                    <option name="name" value="tableName" />
+                    <option name="type" value="java.lang.String" />
+                  </ColumnInfoDTO>
+                  <ColumnInfoDTO>
+                    <option name="custom" value="false" />
+                    <option name="ext">
+                      <map />
+                    </option>
+                    <option name="name" value="columnName" />
+                    <option name="type" value="java.lang.String" />
+                  </ColumnInfoDTO>
+                  <ColumnInfoDTO>
+                    <option name="custom" value="false" />
+                    <option name="ext">
+                      <map />
+                    </option>
+                    <option name="name" value="privilegeType" />
+                    <option name="type" value="java.lang.String" />
+                  </ColumnInfoDTO>
+                  <ColumnInfoDTO>
+                    <option name="custom" value="false" />
+                    <option name="ext">
+                      <map />
+                    </option>
+                    <option name="name" value="isGrantable" />
+                    <option name="type" value="java.lang.String" />
+                  </ColumnInfoDTO>
+                </list>
+              </option>
+              <option name="name" value="ColumnPrivileges" />
+              <option name="preName" value="" />
+              <option name="saveModelName" value="" />
+              <option name="savePackageName" value="" />
+              <option name="savePath" value="" />
+              <option name="templateGroupName" value="" />
+            </TableInfoDTO>
+          </value>
+        </entry>
+        <entry key="niumall.goods_category">
+          <value>
+            <TableInfoDTO>
+              <option name="comment" value="niumall商城-商品分类" />
+              <option name="fullColumn">
+                <list>
+                  <ColumnInfoDTO>
                     <option name="custom" value="false" />
                     <option name="ext">
                       <map />
                     </option>
                     <option name="name" value="id" />
-                    <option name="type" value="java.lang.Long" />
+                    <option name="type" value="java.lang.String" />
                   </ColumnInfoDTO>
                   <ColumnInfoDTO>
-                    <option name="comment" value="用户名" />
+                    <option name="comment" value="父id" />
                     <option name="custom" value="false" />
                     <option name="ext">
                       <map />
                     </option>
-                    <option name="name" value="userName" />
-                    <option name="type" value="java.lang.String" />
+                    <option name="name" value="pid" />
+                    <option name="type" value="java.lang.Integer" />
                   </ColumnInfoDTO>
                   <ColumnInfoDTO>
-                    <option name="comment" value="昵称" />
+                    <option name="comment" value="icon图标" />
                     <option name="custom" value="false" />
                     <option name="ext">
                       <map />
                     </option>
-                    <option name="name" value="nickName" />
+                    <option name="name" value="icon" />
                     <option name="type" value="java.lang.String" />
                   </ColumnInfoDTO>
                   <ColumnInfoDTO>
-                    <option name="comment" value="密码" />
+                    <option name="comment" value="名称" />
                     <option name="custom" value="false" />
                     <option name="ext">
                       <map />
                     </option>
-                    <option name="name" value="password" />
+                    <option name="name" value="goodsCategoryName" />
                     <option name="type" value="java.lang.String" />
                   </ColumnInfoDTO>
                   <ColumnInfoDTO>
-                    <option name="comment" value="用户类型：0代表普通用户，1代表管理员" />
+                    <option name="comment" value="副标题" />
                     <option name="custom" value="false" />
                     <option name="ext">
                       <map />
                     </option>
-                    <option name="name" value="type" />
+                    <option name="name" value="viceName" />
                     <option name="type" value="java.lang.String" />
                   </ColumnInfoDTO>
                   <ColumnInfoDTO>
-                    <option name="comment" value="账号状态（0正常 1停用）" />
+                    <option name="comment" value="描述" />
                     <option name="custom" value="false" />
                     <option name="ext">
                       <map />
                     </option>
-                    <option name="name" value="status" />
+                    <option name="name" value="goodsCategoryDescribe" />
                     <option name="type" value="java.lang.String" />
                   </ColumnInfoDTO>
                   <ColumnInfoDTO>
-                    <option name="comment" value="邮箱" />
+                    <option name="comment" value="大图片" />
                     <option name="custom" value="false" />
                     <option name="ext">
                       <map />
                     </option>
-                    <option name="name" value="email" />
+                    <option name="name" value="bigImages" />
                     <option name="type" value="java.lang.String" />
                   </ColumnInfoDTO>
                   <ColumnInfoDTO>
-                    <option name="comment" value="手机号" />
+                    <option name="comment" value="是否首页推荐（0否, 1是）" />
                     <option name="custom" value="false" />
                     <option name="ext">
                       <map />
                     </option>
-                    <option name="name" value="phonenumber" />
-                    <option name="type" value="java.lang.String" />
+                    <option name="name" value="isHomeRecommended" />
+                    <option name="type" value="java.lang.Integer" />
                   </ColumnInfoDTO>
                   <ColumnInfoDTO>
-                    <option name="comment" value="用户性别（0男，1女，2未知）" />
+                    <option name="comment" value="排序" />
                     <option name="custom" value="false" />
                     <option name="ext">
                       <map />
                     </option>
-                    <option name="name" value="sex" />
-                    <option name="type" value="java.lang.String" />
+                    <option name="name" value="sort" />
+                    <option name="type" value="java.lang.Integer" />
                   </ColumnInfoDTO>
                   <ColumnInfoDTO>
-                    <option name="comment" value="头像" />
+                    <option name="comment" value="是否启用（0否，1是）" />
                     <option name="custom" value="false" />
                     <option name="ext">
                       <map />
                     </option>
-                    <option name="name" value="avatar" />
-                    <option name="type" value="java.lang.String" />
+                    <option name="name" value="isEnable" />
+                    <option name="type" value="java.lang.Integer" />
                   </ColumnInfoDTO>
                   <ColumnInfoDTO>
                     <option name="comment" value="创建人的用户id" />
@@ -141,6 +212,113 @@
                     <option name="ext">
                       <map />
                     </option>
+                    <option name="name" value="delFlag" />
+                    <option name="type" value="java.lang.Integer" />
+                  </ColumnInfoDTO>
+                </list>
+              </option>
+              <option name="name" value="GoodsCategory" />
+              <option name="preName" value="" />
+              <option name="saveModelName" value="niuMall-base" />
+              <option name="savePackageName" value="com.hechi.niumall" />
+              <option name="savePath" value="./niuMall-base/src/main/java/com/hechi/niumall" />
+              <option name="templateGroupName" value="MybatisPlus" />
+            </TableInfoDTO>
+          </value>
+        </entry>
+        <entry key="sys_user">
+          <value>
+            <TableInfoDTO>
+              <option name="comment" value="用户表" />
+              <option name="fullColumn">
+                <list>
+                  <ColumnInfoDTO>
+                    <option name="comment" value="主键" />
+                    <option name="custom" value="false" />
+                    <option name="name" value="id" />
+                    <option name="type" value="java.lang.Long" />
+                  </ColumnInfoDTO>
+                  <ColumnInfoDTO>
+                    <option name="comment" value="用户名" />
+                    <option name="custom" value="false" />
+                    <option name="name" value="userName" />
+                    <option name="type" value="java.lang.String" />
+                  </ColumnInfoDTO>
+                  <ColumnInfoDTO>
+                    <option name="comment" value="昵称" />
+                    <option name="custom" value="false" />
+                    <option name="name" value="nickName" />
+                    <option name="type" value="java.lang.String" />
+                  </ColumnInfoDTO>
+                  <ColumnInfoDTO>
+                    <option name="comment" value="密码" />
+                    <option name="custom" value="false" />
+                    <option name="name" value="password" />
+                    <option name="type" value="java.lang.String" />
+                  </ColumnInfoDTO>
+                  <ColumnInfoDTO>
+                    <option name="comment" value="用户类型：0代表普通用户，1代表管理员" />
+                    <option name="custom" value="false" />
+                    <option name="name" value="type" />
+                    <option name="type" value="java.lang.String" />
+                  </ColumnInfoDTO>
+                  <ColumnInfoDTO>
+                    <option name="comment" value="账号状态（0正常 1停用）" />
+                    <option name="custom" value="false" />
+                    <option name="name" value="status" />
+                    <option name="type" value="java.lang.String" />
+                  </ColumnInfoDTO>
+                  <ColumnInfoDTO>
+                    <option name="comment" value="邮箱" />
+                    <option name="custom" value="false" />
+                    <option name="name" value="email" />
+                    <option name="type" value="java.lang.String" />
+                  </ColumnInfoDTO>
+                  <ColumnInfoDTO>
+                    <option name="comment" value="手机号" />
+                    <option name="custom" value="false" />
+                    <option name="name" value="phonenumber" />
+                    <option name="type" value="java.lang.String" />
+                  </ColumnInfoDTO>
+                  <ColumnInfoDTO>
+                    <option name="comment" value="用户性别（0男，1女，2未知）" />
+                    <option name="custom" value="false" />
+                    <option name="name" value="sex" />
+                    <option name="type" value="java.lang.String" />
+                  </ColumnInfoDTO>
+                  <ColumnInfoDTO>
+                    <option name="comment" value="头像" />
+                    <option name="custom" value="false" />
+                    <option name="name" value="avatar" />
+                    <option name="type" value="java.lang.String" />
+                  </ColumnInfoDTO>
+                  <ColumnInfoDTO>
+                    <option name="comment" value="创建人的用户id" />
+                    <option name="custom" value="false" />
+                    <option name="name" value="createBy" />
+                    <option name="type" value="java.lang.Long" />
+                  </ColumnInfoDTO>
+                  <ColumnInfoDTO>
+                    <option name="comment" value="创建时间" />
+                    <option name="custom" value="false" />
+                    <option name="name" value="createTime" />
+                    <option name="type" value="java.util.Date" />
+                  </ColumnInfoDTO>
+                  <ColumnInfoDTO>
+                    <option name="comment" value="更新人" />
+                    <option name="custom" value="false" />
+                    <option name="name" value="updateBy" />
+                    <option name="type" value="java.lang.Long" />
+                  </ColumnInfoDTO>
+                  <ColumnInfoDTO>
+                    <option name="comment" value="更新时间" />
+                    <option name="custom" value="false" />
+                    <option name="name" value="updateTime" />
+                    <option name="type" value="java.util.Date" />
+                  </ColumnInfoDTO>
+                  <ColumnInfoDTO>
+                    <option name="comment" value="删除标志（0代表未删除，1代表已删除）" />
+                    <option name="custom" value="false" />
                     <option name="name" value="delFlag" />
                     <option name="type" value="java.lang.Integer" />
                   </ColumnInfoDTO>

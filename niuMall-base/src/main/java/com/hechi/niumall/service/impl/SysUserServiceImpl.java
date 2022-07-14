@@ -8,11 +8,15 @@ import com.hechi.niumall.enums.AppHttpCodeEnum;
 import com.hechi.niumall.mapper.SysUserMapper;
 import com.hechi.niumall.result.ResponseResult;
 import com.hechi.niumall.service.SysUserService;
+import com.hechi.niumall.utils.MailUtils;
+import com.hechi.niumall.utils.MessageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
+import java.util.Random;
 
 /**
  * 用户表(SysUser)表服务实现类
@@ -25,11 +29,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    @Autowired
+    MessageUtils messageUtils;
+    @Autowired
+    MailUtils mailUtils;
     @Override
     public SysUser getUser() {
         return getById(1);
     }
-
 
     @Override
     public LoginUser getUserByPhoneNumber(String phoneNumber) {
@@ -46,7 +53,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         //todo 封装限权
         return new LoginUser(user,null);
     }
-
 
     @Override
     public ResponseResult isExist(SysUser user) {
@@ -66,5 +72,29 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         //对密码进行加密
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return  save(user)?ResponseResult.okResult():ResponseResult.errorResult(AppHttpCodeEnum.USERNAME_EXIST);
+    }
+
+    @Override
+    @Transactional
+    public ResponseResult findpassword(SysUser user) throws Exception {
+        //判断是邮箱还是手机号 选择相应的工具类发送消息
+        Random random = new Random();
+        int code = random.nextInt(100000);
+        SysUser one = null;
+        if (user.getPhonenumber()!=null&&user.getEmail()==null){
+            LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(SysUser ::getPhonenumber,user.getPhonenumber());
+            one = getOne(queryWrapper);
+            messageUtils.sentMessage(user.getPhonenumber(),Integer.toString(code));
+        }
+        if(user.getEmail()!=null&&user.getPhonenumber()==null) {
+            LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(SysUser ::getEmail,user.getEmail());
+            one = getOne(queryWrapper);
+            mailUtils.sentMailCode(user.getEmail(), "重置密码","mallNewPassword",Integer.toString(code));
+        }
+        assert one != null;
+        one.setPassword(passwordEncoder.encode(Integer.toString(code)));
+        return updateById(one)? ResponseResult.okResult():ResponseResult.errorResult(AppHttpCodeEnum.SYSTEM_ERROR);
     }
 }

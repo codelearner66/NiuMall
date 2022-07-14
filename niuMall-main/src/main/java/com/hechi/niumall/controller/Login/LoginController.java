@@ -75,7 +75,13 @@ public class LoginController {
     public ResponseResult logout(){
         return loginService.logout();
     }
-
+    /**
+     * 找回密码
+     */
+    @PostMapping("/findpassword")
+    public ResponseResult findpassword(@NonNull @RequestBody SysUser user) throws Exception {
+       return sysUserService.findpassword(user);
+    }
     /**
      * 判断帐号是否存在
      * @param user
@@ -106,6 +112,6 @@ public class LoginController {
 //            // TODO Auto-generated catch block
 //            e.printStackTrace();
 //        }
-        mailUtils.sentMailCode(to[0],"123456");
+       // mailUtils.sentMailCode(to[0],"123456");
     }
 }

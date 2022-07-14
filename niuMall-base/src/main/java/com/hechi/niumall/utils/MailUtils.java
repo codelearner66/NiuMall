@@ -118,12 +118,12 @@ public class MailUtils {
         mailSender.send(mimeMessage);
     }
     @Async
-    public  void sentMailCode(String to,String code) throws MessagingException {
+    public  void sentMailCode(String to,String subject,String templatePath,String code) throws MessagingException {
         MimeMessage mimeMessage =mailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
         mimeMessageHelper.setFrom(senter);
         mimeMessageHelper.setTo(to);
-        mimeMessageHelper.setSubject("niuMaill商城验证码");
+        mimeMessageHelper.setSubject(subject);//"niuMaill商城验证码"
         // 利用 Thymeleaf 模板构建 html 文本
         Context ctx = new Context();
         // 给模板的参数的上下文
@@ -131,7 +131,7 @@ public class MailUtils {
         message.put("message",code);
         ctx.setVariables(message);
         // String emailText = templateEngine.process("email/templates", ctx);
-        String emailText = templateEngine.process("mailCode", ctx);
+        String emailText = templateEngine.process(templatePath, ctx);
         mimeMessageHelper.setText(emailText, true);
         mailSender.send(mimeMessage);
     }
