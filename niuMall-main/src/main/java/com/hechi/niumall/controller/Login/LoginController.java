@@ -47,6 +47,7 @@ public class LoginController {
      * @return
      * @throws Exception
      */
+    //@PreAuthorize("hasAuthority('root')")
     @PostMapping("/getCode")
     public ResponseResult getCode(@RequestBody String phoneNumber) throws Exception {
         JSONObject jsonObject = JSONObject.parseObject(phoneNumber);

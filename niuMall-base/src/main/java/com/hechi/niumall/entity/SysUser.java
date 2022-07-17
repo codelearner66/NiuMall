@@ -1,5 +1,6 @@
 package com.hechi.niumall.entity;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,7 +22,8 @@ import java.util.Date;
 @NoArgsConstructor
 @TableName("sys_user")
 public class SysUser  {
-    //主键@TableId
+    //主键
+    @TableId
     private Long id;
 
     //用户名

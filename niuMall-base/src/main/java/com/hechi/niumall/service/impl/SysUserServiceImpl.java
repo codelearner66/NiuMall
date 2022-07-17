@@ -2,12 +2,11 @@ package com.hechi.niumall.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.hechi.niumall.entity.LoginUser;
-import com.hechi.niumall.entity.SysUser;
+import com.hechi.niumall.entity.*;
 import com.hechi.niumall.enums.AppHttpCodeEnum;
 import com.hechi.niumall.mapper.SysUserMapper;
 import com.hechi.niumall.result.ResponseResult;
-import com.hechi.niumall.service.SysUserService;
+import com.hechi.niumall.service.*;
 import com.hechi.niumall.utils.MailUtils;
 import com.hechi.niumall.utils.MessageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +14,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * 用户表(SysUser)表服务实现类
@@ -28,7 +29,14 @@ import java.util.Random;
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements SysUserService {
     @Autowired
     PasswordEncoder passwordEncoder;
-
+    @Autowired
+    SysUserRoleService sysUserRoleService;
+    @Autowired
+    SysRoleService sysRoleService;
+    @Autowired
+    SysRoleMenuService sysRoleMenuService;
+    @Autowired
+    SysMenuService sysMenuService;
     @Autowired
     MessageUtils messageUtils;
     @Autowired
@@ -48,10 +56,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         //返回用户信息
         //查询权限信息封装
-        //List<String> userAuthorityList = menuMapper.getUserAuthorityList(user.getId());
-        //return new LoginUser(user,userAuthorityList);
-        //todo 封装限权
-        return new LoginUser(user,null);
+        List<SysUserRole> sysUserRolesByUserId = sysUserRoleService.getSysUserRolesByUserId(user.getId());
+        List<Long> collect = sysUserRolesByUserId.stream().map(SysUserRole::getRoleId).collect(Collectors.toList());
+        collect.forEach(System.out::println);
+        List<SysRoleMenu> sysRoleMenuList = sysRoleMenuService.getSysRoleMenuList(collect);
+        List<Long> collect1 = sysRoleMenuList.stream().map(SysRoleMenu::getMenuId).collect(Collectors.toList());
+        List<SysMenu> sysMenuList = sysMenuService.getSysMenuList(collect1);
+        List<String> collect2 = sysMenuList.stream().map(SysMenu::getPerms).collect(Collectors.toList());
+        //返回用户信息
+        //查询权限信息封装
+        return new LoginUser(user,collect2);
     }
 
     @Override
