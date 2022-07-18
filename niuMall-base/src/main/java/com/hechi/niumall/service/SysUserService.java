@@ -12,7 +12,7 @@ import com.hechi.niumall.result.ResponseResult;
  * @since 2022-07-09 16:29:11
  */
 public interface SysUserService extends IService<SysUser> {
-    SysUser getUser();
+    ResponseResult getUser();
     /**
      * 通过 手机号或邮箱查询用户信息
      * @param phoneNumber

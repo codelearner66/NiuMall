@@ -7,8 +7,11 @@ import com.hechi.niumall.enums.AppHttpCodeEnum;
 import com.hechi.niumall.mapper.SysUserMapper;
 import com.hechi.niumall.result.ResponseResult;
 import com.hechi.niumall.service.*;
+import com.hechi.niumall.utils.BeanCopyUtils;
 import com.hechi.niumall.utils.MailUtils;
 import com.hechi.niumall.utils.MessageUtils;
+import com.hechi.niumall.utils.SecurityUtils;
+import com.hechi.niumall.vo.UserInfoVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -42,8 +45,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Autowired
     MailUtils mailUtils;
     @Override
-    public SysUser getUser() {
-        return getById(1);
+    public ResponseResult getUser() {
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        UserInfoVo userInfoVo = BeanCopyUtils.copyBean(loginUser.getUser(), UserInfoVo.class);
+        return ResponseResult.okResult(userInfoVo) ;
     }
 
     @Override
