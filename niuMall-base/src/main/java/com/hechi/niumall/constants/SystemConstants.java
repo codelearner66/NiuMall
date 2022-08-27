@@ -4,39 +4,59 @@ package com.hechi.niumall.constants;
  * @author ccx
  * 常用静态变量
  */
-public class SystemConstants
-{
+public class SystemConstants {
+
 
     /**
-     *  文章是正常分布状态
+     * 支付类型 0 余额支付
      */
-    public static final int ARTICLE_STATUS_NORMAL = 0;
-
-    /**
-     *  文章是草稿
-     */
-    public static final int ARTICLE_STATUS_DRAFT = 1;
+    public static final int BALANCE_PAY = 0;
     /*
-    * 文章已提交审核
+     *  1 支付宝支付
      */
-    public static final int ARTICLE_STATUS_WAITTOCHECK = 2;
+    public static final int ALI_PAY = 1;
+
     /**
-     * 文章被驳回 未审核过
+     * order_status 支付状态
+     * 未支付
      */
-    public static final int ARTICLE_STATUS_REJECT = 3;
+    public static final int ORDER_NOT_PAY = 1;
+    /**
+     * 已支付
+     */
+    public static final int ORDER_PAID = 2;
+    /**
+     * 未发货
+     */
+    public static final int ORDER_UNSHIPPED = 3;
+    /**
+     * 已发货
+     */
+    public static final int ORDER_SHIPPED=4;
+    /**
+     * 交易成功
+     */
+    public static final int ORDER_DONE=5;
+    /**
+     * 交易关闭
+     */
+    public static final int ORDER_CLOSED=6;
+//用户取消订单
+    public static final int ORDER_USER_CLOSED=7;
+    /**
+     * 退款中
+     */
+    public  static final int REFUND_PROCESSING=8;
 
 
-    public static final String  STATUS_NORMAL = "0";
     /**
-     * 友链状态为审核通过
+     * 已退款
      */
-    public static final String  LINK_STATUS_NORMAL = "0";
+    public  static final int REFUND_SUCCESS=9;
+
     /**
-     * 评论类型为：文章评论
+     * 退款异常
      */
-    public static final String ARTICLE_COMMENT = "0";
-    /**
-     * 评论类型为：友联评论
-     */
-    public static final String LINK_COMMENT = "1";
+    public  static final int  REFUND_ABNORMAL=10;
+
 }

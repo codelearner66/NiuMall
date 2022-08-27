@@ -116,4 +116,18 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         one.setPassword(passwordEncoder.encode(Integer.toString(code)));
         return updateById(one)? ResponseResult.okResult():ResponseResult.errorResult(AppHttpCodeEnum.SYSTEM_ERROR);
     }
+
+    @Override
+    public ResponseResult checkPassword(String password) {
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        loginUser.getPassword();
+        boolean matches = passwordEncoder.matches(password, loginUser.getPassword());
+        return matches?ResponseResult.okResult():ResponseResult.errorResult(AppHttpCodeEnum.SYSTEM_ERROR);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public boolean updataUser(SysUser user) {
+        return updateById(user);
+    }
 }

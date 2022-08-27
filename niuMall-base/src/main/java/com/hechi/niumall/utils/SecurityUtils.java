@@ -1,6 +1,7 @@
 package com.hechi.niumall.utils;
 
 import com.hechi.niumall.entity.LoginUser;
+import com.hechi.niumall.entity.SysUser;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -27,6 +28,7 @@ public class SecurityUtils {
     }
 
     public static Long getUserId() {
-        return getLoginUser().getUser().getId();
+        SysUser user = getLoginUser().getUser();
+        return user.getId();
     }
 }

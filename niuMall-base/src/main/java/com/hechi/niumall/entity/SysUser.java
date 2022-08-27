@@ -34,6 +34,8 @@ public class SysUser  {
     private String password;
     //用户类型：0代表普通用户，1代表管理员
     private String type;
+    //账号余额
+    private Long balance;
     //账号状态（0正常 1停用）
     private String status;
     //邮箱

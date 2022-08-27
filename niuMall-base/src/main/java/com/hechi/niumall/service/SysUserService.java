@@ -39,4 +39,15 @@ public interface SysUserService extends IService<SysUser> {
      * @return
      */
     ResponseResult findpassword(SysUser user) throws Exception;
+
+
+    boolean  updataUser(SysUser user);
+
+    /**
+     * 检测用户是否为本人操作
+     * 密码校验
+     * @param password 密码
+     * @return
+     */
+    ResponseResult checkPassword(String password);
 }

@@ -6,7 +6,12 @@ import com.aliyun.teaopenapi.models.Config;
 import com.aliyun.teautil.models.RuntimeOptions;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author ccx
+ * 阿里云 短信服务工具类
+ */
 @Component
+
 public class MessageUtils {
     private final String accessKeyId="LTAI5tJfVqaZzHnxvKmBvUFe";
     private final String accessKeySecret="Gj7lOqYQdQk3w7OHNnZTmBeBpXiEuT";

@@ -6,6 +6,9 @@ import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * @author ccx
+ */
 public class BeanCopyUtils {
 
     private BeanCopyUtils() {

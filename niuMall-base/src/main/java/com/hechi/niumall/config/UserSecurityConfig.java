@@ -66,7 +66,7 @@ public class UserSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         String [] passUrl={"/login", "/logout", "/register", "/getCode",
-                "/getMailCode","/isexist","/baseRegister","/findpassword"};
+                "/getMailCode","/isexist","/baseRegister","/findpassword","/pay/api/trade/notify"};
         // 定制请求的授权规则 //关闭csrf
         http.csrf().disable()
                 //关闭session
