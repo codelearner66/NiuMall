@@ -22,4 +22,15 @@ public class UserAddrController {
     public ResponseResult getUserAddr(){
         return userAddrService.getAddrByUser();
     }
+
+    @GetMapping("/deleteUserAddr")
+    public ResponseResult deleteAddrById(Long id){
+
+          return userAddrService.deleteAddrById(id);
+    }
+
+    @PostMapping("/updataUserAddr")
+    public ResponseResult updataUserAddr(@RequestBody UserAddr userAddr){
+        return userAddrService.updateAddr(userAddr);
+    }
 }

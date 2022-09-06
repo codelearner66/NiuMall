@@ -122,7 +122,8 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     @Override
     public ResponseResult getPages(int pages) {
         LambdaQueryWrapper<Goods> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.between(Goods::getCategory, 1, 6).orderByDesc(Goods::getAccessCount);
+        queryWrapper.between(Goods::getCategory, 1, 6)
+                    .orderByDesc(Goods::getAccessCount);
         Page<Goods> page1 = new Page<>(pages, 50);
         page(page1, queryWrapper);
         //封装分页结果vo

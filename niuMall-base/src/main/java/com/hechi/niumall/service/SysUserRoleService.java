@@ -14,5 +14,6 @@ import java.util.List;
  */
 public interface SysUserRoleService extends IService<SysUserRole> {
     public List<SysUserRole> getSysUserRolesByUserId(Long id);
+    boolean upDataUserRole(SysUserRole userRole);
 }
 

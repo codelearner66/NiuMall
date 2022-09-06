@@ -24,7 +24,6 @@ public class register {
     @PostMapping("/phoneRegister")
     public ResponseResult phoneRegister(@RequestBody SysUser sysUser){
 
-
         return ResponseResult.okResult();
     }
     // 邮箱注册

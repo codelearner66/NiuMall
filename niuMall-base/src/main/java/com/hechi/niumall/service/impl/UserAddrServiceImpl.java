@@ -11,7 +11,9 @@ import com.hechi.niumall.result.ResponseResult;
 import com.hechi.niumall.service.UserAddrService;
 import com.hechi.niumall.utils.SecurityUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -47,20 +49,25 @@ public class UserAddrServiceImpl extends ServiceImpl<UserAddrMapper, UserAddr> i
         }
         return ResponseResult.okResult(byId);
     }
-
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public ResponseResult createAddr(UserAddr addr) {
         LoginUser loginUser = SecurityUtils.getLoginUser();
         SysUser user = loginUser.getUser();
         addr.setUserId(String.valueOf(user.getId()));
-        addr.setName(user.getNickName());
-        addr.setMobile(user.getPhonenumber());
+        if (addr.getName()==null){
+            addr.setName(user.getNickName());
+        }
+        if (addr.getMobile()==null){
+            addr.setMobile(user.getPhonenumber());
+        }
+        addr.setCreateTime(new Date());
         boolean save = save(addr);
         return save
                 ? ResponseResult.okResult(addr.getId())
                 : ResponseResult.errorResult(AppHttpCodeEnum.USER_ADD_ADDR_ERROR);
     }
-
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public ResponseResult updateAddr(UserAddr addr) {
         UserAddr byId = getById(addr.getId());
@@ -73,10 +80,13 @@ public class UserAddrServiceImpl extends ServiceImpl<UserAddrMapper, UserAddr> i
                 : ResponseResult.errorResult(AppHttpCodeEnum.USER_UPDATA_ADDR_ERROR);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public ResponseResult deleteAddrById(Long id) {
-        boolean b = removeById(id);
-        return b
+        LambdaQueryWrapper<UserAddr> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(UserAddr ::getId,id).eq(UserAddr ::getUserId,SecurityUtils.getUserId());
+        int delete = baseMapper.delete(queryWrapper);
+        return delete>0
                 ? ResponseResult.okResult()
                 : ResponseResult.errorResult(AppHttpCodeEnum.USER_DELETE_ADDR_ERROR);
     }

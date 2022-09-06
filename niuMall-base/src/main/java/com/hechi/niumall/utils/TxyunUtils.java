@@ -8,7 +8,7 @@ import com.qcloud.cos.exception.CosClientException;
 import com.qcloud.cos.http.HttpProtocol;
 import com.qcloud.cos.model.*;
 import com.qcloud.cos.region.Region;
-import org.apache.http.HttpRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,11 +16,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author ccx
  * 腾讯云对象存储工具类
  */
+@Slf4j
 @Component
 public class TxyunUtils {
     private COSClient cosClient = null;
@@ -41,7 +43,6 @@ public class TxyunUtils {
         this.cosClient = new COSClient(cred, clientConfig);
     }
 
-
     //上传文件到腾讯云
 
     /**
@@ -61,16 +62,26 @@ public class TxyunUtils {
         PutObjectResult putObjectResult = cosClient.putObject(putObjectRequest);
         return PREPATH + key;
     }
-
-    public String doUpdata(MultipartFile file, HttpRequest request) throws IOException {
+//todo
+    public String doUpdata(MultipartFile file, String prefix) throws IOException {
+        log.info("文件上传！");
         //文件校验
-        //校验完成后 使用File.createTempFile(prefix,subfix) 创建一个临时文件 将file 写入到临时文件 然后再由 腾讯云api进行上传
+        String originalFilename = file.getOriginalFilename();
+        if (!originalFilename.endsWith(".jpg")&&!originalFilename.endsWith(".jpeg")){
+            throw  new RuntimeException("文件格式不正确！");
+        }
+        long size = file.getSize();
+        if (size >1024*1024*5) {
+            throw new RuntimeException("文件大小超出规定5MB");
+        }
+        //校验完成后 使用File.createTempFile(prefix,subfix)
+        // 创建一个临时文件 将file 写入到临时文件 然后再由 腾讯云api进行上传
         //将上传结果返回
-        File localFile = null;
+        File localFile;
         localFile = File.createTempFile("temp", "jpg");
         file.transferTo(localFile);
-        String key = this.doUpdate(String.valueOf(localFile), "key");
-        return key;
+        String replace = UUID.randomUUID().toString().replace("-", "");
+        return this.doUpdate(String.valueOf(localFile), prefix+replace+".jpg");
     }
 
     /**

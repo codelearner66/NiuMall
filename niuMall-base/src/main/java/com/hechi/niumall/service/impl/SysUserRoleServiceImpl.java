@@ -23,4 +23,9 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
         queryWrapper.eq(SysUserRole::getUserId, id);
         return list(queryWrapper);
     }
+
+    @Override
+    public boolean upDataUserRole(SysUserRole sysUserRole) {
+        return updateById(sysUserRole);
+    }
 }

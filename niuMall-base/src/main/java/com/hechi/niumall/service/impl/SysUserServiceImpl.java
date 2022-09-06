@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -83,6 +84,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
            return one!=null? ResponseResult.okResult(200,"帐号存在"): ResponseResult.errorResult(200,"帐号不存在");
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public ResponseResult addUser(SysUser user) {
         if("帐号存在".equals(isExist(user).getMsg())){
@@ -90,7 +92,17 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         //对密码进行加密
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return  save(user)?ResponseResult.okResult():ResponseResult.errorResult(AppHttpCodeEnum.USERNAME_EXIST);
+        user.setNickName("开心的萝卜头");
+        user.setSex("0");
+        user.setAvatar("https://miumall-1306251195.cos.ap-chengdu.myqcloud.com/headers/header.png");
+        user.setCreateTime(new Date());
+        boolean save = save(user);
+        boolean save1 =false;
+        if (save) {
+             save1 = sysUserRoleService.save(new SysUserRole(user.getId(), 4L));
+        }
+        //todo 给初始帐号赋给限权
+        return  save&&save1?ResponseResult.okResult():ResponseResult.errorResult(AppHttpCodeEnum.USERNAME_EXIST);
     }
 
     @Override
