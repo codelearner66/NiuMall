@@ -55,7 +55,7 @@
             <artifactId>cos_api</artifactId>
             <version>5.6.89</version>
         </dependency>
-<!--        thymeleaf服务-->
+        <!--        thymeleaf服务-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
@@ -124,7 +124,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jdbc</artifactId>
         </dependency>
-<!--        caChe  注解缓存-->
+        <!--        caChe  注解缓存-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-cache</artifactId>

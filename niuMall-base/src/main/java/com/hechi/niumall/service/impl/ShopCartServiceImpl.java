@@ -16,6 +16,8 @@ import com.hechi.niumall.utils.SecurityUtils;
 import com.hechi.niumall.vo.orderVo;
 import com.hechi.niumall.vo.shopCartVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,18 +66,21 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
     }
 
     @Override
+    @CacheEvict(value = "ShopCart",key="'ShopCart:'+#shopCart.userId")
     public ResponseResult updataShopCart(ShopCart shopCart) {
         boolean b = updateById(shopCart);
         return b?ResponseResult.okResult():ResponseResult.errorResult(AppHttpCodeEnum.SHOPCART_ERROE);
     }
 
     @Override
+    @CacheEvict(value = "ShopCart",key="'ShopCart:'+#shopCart.userId")
     public ResponseResult deleteShopCart(ShopCart shopCart) {
         boolean b = removeById(shopCart.getId());
         return b?ResponseResult.okResult():ResponseResult.errorResult(AppHttpCodeEnum.SHOPCART_DELETE_ERROE);
     }
 
     @Override
+    @Cacheable(value = "ShopCart",key = "'ShopCart:'+#userId")
     public ResponseResult getShopCartByUserId(Integer userId, int pages, int size) {
         LambdaQueryWrapper<ShopCart> wrap=new LambdaQueryWrapper<>();
         wrap.eq(ShopCart ::getUserId,userId);
@@ -84,13 +89,14 @@ public class ShopCartServiceImpl extends ServiceImpl<ShopCartMapper, ShopCart> i
         return ResponseResult.okResult(page1);
     }
 
+
     @Override
     public ResponseResult getShopCartByUserId(int pages, int size) {
         return this.getShopCartByUserId(Math.toIntExact(SecurityUtils.getUserId()),pages,size);
     }
 
-    @Transactional(rollbackFor = Exception.class)
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ResponseResult settleAccounts(shopCartVo list) {
         List<ShopCart> list1 = list.getList();
         UserAddr userAddr = list.getUserAddr();

@@ -18,7 +18,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("goods")
-public class Goods  {
+public class Goods{
     @TableId
     private String id;
 

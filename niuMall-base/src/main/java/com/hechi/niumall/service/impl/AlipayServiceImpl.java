@@ -11,12 +11,10 @@ import com.hechi.niumall.constants.SystemConstants;
 import com.hechi.niumall.entity.Goods;
 import com.hechi.niumall.entity.Order;
 import com.hechi.niumall.entity.RefundInfo;
+import com.hechi.niumall.entity.SysUser;
 import com.hechi.niumall.enums.AliPayTradeState;
 import com.hechi.niumall.result.ResponseResult;
-import com.hechi.niumall.service.AlipayService;
-import com.hechi.niumall.service.OrderService;
-import com.hechi.niumall.service.PaymentLogService;
-import com.hechi.niumall.service.RefundInfoService;
+import com.hechi.niumall.service.*;
 import com.hechi.niumall.vo.orderVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +41,8 @@ public class AlipayServiceImpl implements AlipayService {
 
     @Autowired
     RefundInfoService refundInfoService;
-
+    @Autowired
+    SysUserService sysUserService;
     @Resource
     private Environment config;
 
@@ -122,6 +121,17 @@ public class AlipayServiceImpl implements AlipayService {
                 orderByOrderNo.setPaymentTime(new Date());
 
                 orderService.updateOrder(orderByOrderNo);
+                 //  果是余额充值就更新用户余额
+                if (orderByOrderNo.getGoodsId() == 0L) {
+                    SysUser byId = sysUserService.getById(orderByOrderNo.getUserId());
+                    if (byId != null) {
+                        String payment = orderByOrderNo.getPayment();
+                        String replace = payment.replace(".00", "");
+                        byId.setBalance(byId.getBalance() + Long.parseLong(replace));
+                        sysUserService.updataUser(byId);
+                    }
+
+                }
                 //  记录支付日志
                 paymentLogService.createPaymentInfoForAliPay(params);
             } finally {
@@ -135,6 +145,7 @@ public class AlipayServiceImpl implements AlipayService {
 
     /**
      * 关单接口
+     *
      * @param orderNo
      */
     @Override
@@ -164,7 +175,8 @@ public class AlipayServiceImpl implements AlipayService {
     }
 
     /**
-     *  查单接口
+     * 查单接口
+     *
      * @param orderNo
      * @return
      */
@@ -197,7 +209,8 @@ public class AlipayServiceImpl implements AlipayService {
      * 如果订单未创建，则更新商户端订单状态
      * 如果订单未支付，则调用关单接口关闭订单，并更新商户端订单状态
      * 如果订单已支付，则更新商户端订单状态，并记录支付日志
-     *后期结合rabbitmq 通过死信队列做自动查单 超时关单操作
+     * 后期结合rabbitmq 通过死信队列做自动查单 超时关单操作
+     *
      * @param orderNo
      */
     @Override
@@ -210,7 +223,7 @@ public class AlipayServiceImpl implements AlipayService {
             Order order = new Order();
             order.setOrderId(orderNo);
             order.setOrderStatus(SystemConstants.ORDER_CLOSED);
-          //  更新本地订单状态
+            //  更新本地订单状态
             orderService.updateOrder(order);
             return;
         }
@@ -221,15 +234,15 @@ public class AlipayServiceImpl implements AlipayService {
 
         LinkedTreeMap alipayTradeQueryResponse = hashMap.get("alipay_trade_query_response");
 
-        String tradeStatus = (String)alipayTradeQueryResponse.get("trade_status");
-        if (AliPayTradeState.NOTPAY.getType().equals(tradeStatus)){
+        String tradeStatus = (String) alipayTradeQueryResponse.get("trade_status");
+        if (AliPayTradeState.NOTPAY.getType().equals(tradeStatus)) {
             log.warn("核实订单未支付 ===> {}", orderNo);
             this.cancelOrder(orderNo);
         }
-        if (AliPayTradeState.SUCCESS.getType().equals(tradeStatus)){
+        if (AliPayTradeState.SUCCESS.getType().equals(tradeStatus)) {
             log.warn("核实订单已支付 ===> {}", orderNo);
             //如果订单已支付，则更新商户端订单状态
-            Order order=new Order();
+            Order order = new Order();
             order.setOrderId(orderNo);
             order.setOrderStatus(SystemConstants.ORDER_PAID);
             orderService.updateOrder(order);
@@ -242,6 +255,7 @@ public class AlipayServiceImpl implements AlipayService {
 
     /**
      * 退款接口
+     *
      * @param refInfo orderNo 订单编号 reason 退款原因
      */
     @Transactional(rollbackFor = Exception.class)
@@ -257,11 +271,11 @@ public class AlipayServiceImpl implements AlipayService {
 //            组装请求数据
             JSONObject bizContent = new JSONObject();
 //            订单编号
-            bizContent.put("out_trade_no",refundByOrderNoForAliPay.getOrderNo());
+            bizContent.put("out_trade_no", refundByOrderNoForAliPay.getOrderNo());
 //            退款金额
-            bizContent.put("refund_amount",refundByOrderNoForAliPay.getRefund());
+            bizContent.put("refund_amount", refundByOrderNoForAliPay.getRefund());
 //            退款原因
-            bizContent.put("refund_reason",refundByOrderNoForAliPay.getReason());
+            bizContent.put("refund_reason", refundByOrderNoForAliPay.getReason());
             request.setBizContent(bizContent.toString());
 
 //            执行请求，调用支付宝接口
@@ -269,15 +283,15 @@ public class AlipayServiceImpl implements AlipayService {
 
             Order orderByOrderNo = orderService.getOrderByOrderNo(refInfo.getOrderNo());
             refundByOrderNoForAliPay.setContentReturn(response.getBody());
-            if(response.isSuccess()){
-                log.info("调用成功，返回结果=====>{}",response.getBody());
+            if (response.isSuccess()) {
+                log.info("调用成功，返回结果=====>{}", response.getBody());
 //                更新订单状态
                 orderByOrderNo.setOrderStatus(SystemConstants.REFUND_SUCCESS);
 //                更新退款单
                 refundByOrderNoForAliPay.setRefundStatus(String.valueOf(SystemConstants.REFUND_SUCCESS));
 
-            }else {
-                log.info("调用失败，返回码=====>"+response.getCode()+",返回描述======>"+response.getMsg());
+            } else {
+                log.info("调用失败，返回码=====>" + response.getCode() + ",返回描述======>" + response.getMsg());
                 //                更新订单状态 退款状态异常
                 orderByOrderNo.setOrderStatus(SystemConstants.REFUND_ABNORMAL);
                 refundByOrderNoForAliPay.setRefundStatus(String.valueOf(SystemConstants.REFUND_ABNORMAL));
@@ -295,6 +309,7 @@ public class AlipayServiceImpl implements AlipayService {
 
     /**
      * 查询退款
+     *
      * @param orderNo
      * @return
      */
@@ -310,7 +325,7 @@ public class AlipayServiceImpl implements AlipayService {
             request.setBizContent(bizContent.toString());
 
             AlipayTradeFastpayRefundQueryResponse response = alipayClient.execute(request);
-            if(response.isSuccess()){
+            if (response.isSuccess()) {
                 log.info("调用成功，返回结果 ===> " + response.getBody());
                 return response.getBody();
             } else {
@@ -327,6 +342,7 @@ public class AlipayServiceImpl implements AlipayService {
 
     /**
      * 申请账单
+     *
      * @param billDate
      * @param type
      * @return

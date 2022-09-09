@@ -13,16 +13,45 @@ import com.hechi.niumall.vo.orderVo;
  * @since 2022-08-09 21:59:54
  */
 public interface OrderService extends IService<Order> {
-    //    通过id获取订单
+    /**
+     *  通过id获取订单
+      */
+
     ResponseResult getOrderById(Long id);
 
-    //   通过 用户id 获取订单
+    /**
+     *  通过 用户id 获取订单
+      */
+
     ResponseResult getOrderByUserId(Long userId);
 
-    //    生成订单
+    /**
+     * 分页查询未支付订单
+     * @param userId 用户id
+     * @param page 页码
+     * @return 分页数据
+     */
+    ResponseResult getOrderByUserIdFornotPay(Long userId,int page);
+
+    /**
+     * 分页查询已支付订单
+     * @param userId 用户 id
+     * @param page 分页
+     * @return  分页数据
+     */
+    ResponseResult getOrderByUserIdForPayed(Long userId,int page);
+
+//    ResponseResult getOrderByUserIdForPayed(Long userId,int page);
+    /**
+     * 生成订单
+      */
+
     ResponseResult createOrder(orderVo goods);
 
-    //    更新订单
+    /**
+     * 更新订单
+      */
+
     ResponseResult updateOrder(Order order);
 
     Order getOrderByOrderNo(String outTradeNo);

@@ -20,6 +20,10 @@ import javax.validation.constraints.NotNull;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * @author 86176
+ * 支付宝支付相关接口
+ */
 @Slf4j
 @RestController
 @RequestMapping("/pay/api")
@@ -42,7 +46,6 @@ public class AlipayController {
         String s = alipayService.tradeCreate(orderVo);
         return ResponseResult.okResult(s);
     }
-
     /**
      * 支付宝支付异步通知接口
      * @param params 订单参数

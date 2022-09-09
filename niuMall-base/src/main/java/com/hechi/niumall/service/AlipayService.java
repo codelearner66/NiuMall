@@ -22,4 +22,5 @@ public interface AlipayService {
     String queryRefund(String orderNo);
 
     String queryBill(String billDate, String type);
+
 }

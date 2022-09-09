@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.hechi.niumall.entity.LoginUser;
 import com.hechi.niumall.entity.SysUser;
 import com.hechi.niumall.result.ResponseResult;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 /**
  * 用户表(SysUser)表服务接口
@@ -50,4 +53,11 @@ public interface SysUserService extends IService<SysUser> {
      * @return
      */
     ResponseResult checkPassword(String password);
+
+    /**
+     * 更新用户头像并删除旧头像
+     * @param file
+     * @return
+     */
+    String uploadHeader(MultipartFile file) throws IOException;
 }

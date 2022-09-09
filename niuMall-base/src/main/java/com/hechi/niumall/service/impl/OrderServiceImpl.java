@@ -3,6 +3,7 @@ package com.hechi.niumall.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hechi.niumall.constants.SystemConstants;
 import com.hechi.niumall.entity.Goods;
@@ -17,6 +18,7 @@ import com.hechi.niumall.utils.OrderNoUtils;
 import com.hechi.niumall.utils.SecurityUtils;
 import com.hechi.niumall.vo.orderVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,6 +61,33 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             return ResponseResult.okResult(list);
         }
         return ResponseResult.errorResult(AppHttpCodeEnum.ORDER_USER_IS_NULL);
+    }
+
+    @Override
+    @Cacheable(value = "orders",key = "'userId:'+#userId+'p'+#page")
+    public ResponseResult getOrderByUserIdFornotPay(Long userId, int page) {
+        return this.getResult(userId, page, SystemConstants.ORDER_NOT_PAY);
+    }
+
+    /**
+     * 查询订单数据
+     * @param userId 用户id
+     * @param page  页码
+     * @param status 订单状态
+     * @return 分页数据
+     */
+    private ResponseResult getResult(Long userId, int page,int status){
+        LambdaQueryWrapper<Order> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Order::getUserId, userId)
+                .eq(Order ::getOrderStatus,status);
+        Page<Order> orderPage = new Page<>(page,10);
+        page(orderPage, queryWrapper);
+        return ResponseResult.okResult(orderPage);
+    }
+
+    @Override
+    public ResponseResult getOrderByUserIdForPayed(Long userId, int page) {
+        return this.getResult(userId, page, SystemConstants.ORDER_PAID);
     }
 
     @Override

@@ -9,6 +9,8 @@ import com.hechi.niumall.mapper.GoodsMapper;
 import com.hechi.niumall.result.ResponseResult;
 import com.hechi.niumall.service.GoodsService;
 import com.hechi.niumall.utils.SecurityUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,6 +41,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
                 : ResponseResult.okResult(one);
     }
 
+    @Cacheable(value = "goods",key = "#id")
     @Override
     public ResponseResult getGoodsDetilsById(Integer id) {
         LambdaQueryWrapper<Goods> lambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -90,6 +93,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         return ResponseResult.errorResult(AppHttpCodeEnum.CATEGORY_GOODS_ISNULL);
     }
 
+
     @Override
     public ResponseResult getGoodsDetilsListByBrand(Integer[] cId, int pages) {
         LambdaQueryWrapper<Goods> lambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -104,6 +108,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         return ResponseResult.errorResult(AppHttpCodeEnum.CATEGORY_GOODS_ISNULL);
     }
 
+    @Cacheable(value = "ListByCategory",key = "#cId+'L'+#pages")
     @Override
     public ResponseResult getGoodsDetilsListByCategory(Integer cId, int pages) {
 
@@ -119,6 +124,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         return ResponseResult.errorResult(AppHttpCodeEnum.CATEGORY_GOODS_NOT_EXIST);
     }
 
+    @Cacheable(value = "mainPages",key = "'page'+#pages")
     @Override
     public ResponseResult getPages(int pages) {
         LambdaQueryWrapper<Goods> queryWrapper = new LambdaQueryWrapper<>();
@@ -130,6 +136,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         return ResponseResult.okResult(page1);
     }
 
+
     @Override
     public ResponseResult addGoods(Goods goods) {
         Long userId = SecurityUtils.getUserId();
@@ -140,6 +147,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
                 : ResponseResult.errorResult(AppHttpCodeEnum.GOODS_ADD_ERROR);
     }
 
+    @CacheEvict(value = "goods",key = "#goods.id")
     @Override
     public ResponseResult updateGoods(Goods goods) {
         boolean b = updateById(goods);
@@ -148,11 +156,13 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
                 : ResponseResult.errorResult(AppHttpCodeEnum.GOODS_UPDATE_ERROR);
     }
 
+    @CacheEvict(value = "goods",key = "#goods.id")
     @Override
     public ResponseResult deleteGoods(Goods goods) {
         return this.deleteGoodsById(Long.valueOf(goods.getId()));
     }
 
+    @CacheEvict(value = "goods",key = "#goods.id")
     @Override
     public ResponseResult deleteGoodsById(Long id) {
         boolean b = removeById(id);

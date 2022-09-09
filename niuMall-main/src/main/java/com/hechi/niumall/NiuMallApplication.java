@@ -10,8 +10,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
  * @author ccx
  */
 @SpringBootApplication
-@EnableCaching
 @EnableAsync
+@EnableCaching
 public class NiuMallApplication
 {
     public static void main( String[] args )

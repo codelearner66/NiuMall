@@ -25,6 +25,8 @@ public class UserInfoVo {
      */
     private String avatar;
     private String sex;
+    //账号余额
+    private Long balance;
     private String phonenumber;
     private String email;
 

@@ -18,7 +18,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("niumall.order")
-public class Order  {
+public class Order{
     @TableId
     private String id;
 

@@ -18,7 +18,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("goods_category")
-public class GoodsCategory  {
+public class GoodsCategory {
     @TableId
     private String id;
 

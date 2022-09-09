@@ -23,6 +23,11 @@ public class UserAddrController {
         return userAddrService.getAddrByUser();
     }
 
+    @GetMapping("/getUserAddrById/{id}")
+    public ResponseResult getUserAddrById(@PathVariable Long id){
+        return userAddrService.getAddrById(id);
+    }
+
     @GetMapping("/deleteUserAddr")
     public ResponseResult deleteAddrById(Long id){
 

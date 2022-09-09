@@ -62,7 +62,6 @@ public class TxyunUtils {
         PutObjectResult putObjectResult = cosClient.putObject(putObjectRequest);
         return PREPATH + key;
     }
-//todo
     public String doUpdata(MultipartFile file, String prefix) throws IOException {
         log.info("文件上传！");
         //文件校验
