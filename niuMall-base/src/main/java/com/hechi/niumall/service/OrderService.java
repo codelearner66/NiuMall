@@ -41,6 +41,15 @@ public interface OrderService extends IService<Order> {
      */
     ResponseResult getOrderByUserIdForPayed(Long userId,int page);
 
+    /**
+     * 查询用户订单
+     * @param userId 用户id
+     * @param page 页码
+     * @param status 订单状态
+     * @return
+     */
+    ResponseResult getOrderByUserIdwithStatus(Long userId,int page,Integer status);
+
 //    ResponseResult getOrderByUserIdForPayed(Long userId,int page);
     /**
      * 生成订单

@@ -18,7 +18,6 @@ import com.hechi.niumall.utils.OrderNoUtils;
 import com.hechi.niumall.utils.SecurityUtils;
 import com.hechi.niumall.vo.orderVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,7 +63,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    @Cacheable(value = "orders",key = "'userId:'+#userId+'p'+#page")
     public ResponseResult getOrderByUserIdFornotPay(Long userId, int page) {
         return this.getResult(userId, page, SystemConstants.ORDER_NOT_PAY);
     }
@@ -86,6 +84,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
+    public ResponseResult getOrderByUserIdwithStatus(Long userId, int page, Integer status) {
+        return this.getResult(userId, page, status);
+    }
+
+    @Override
     public ResponseResult getOrderByUserIdForPayed(Long userId, int page) {
         return this.getResult(userId, page, SystemConstants.ORDER_PAID);
     }
@@ -96,9 +99,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
        lambda.eq(Order::getOrderId, outTradeNo);
         return getOne(lambda);
     }
-
-    @Transactional(rollbackFor = Exception.class)
     @Override
+    @Transactional(rollbackFor = Exception.class)
+
     public ResponseResult createOrder(orderVo goods) {
 //        检查已有未完成订单就直接返回给用户
         LambdaQueryWrapper<Order> queryWrapper = new LambdaQueryWrapper<>();

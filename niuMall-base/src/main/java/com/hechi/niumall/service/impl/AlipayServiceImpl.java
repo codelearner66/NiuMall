@@ -51,45 +51,60 @@ public class AlipayServiceImpl implements AlipayService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public String tradeCreate(orderVo goods) {
-        try {
             log.info("生成订单");
             ResponseResult result = orderService.createOrder(goods);
             Order order = (Order) result.getData();
-            //调用支付宝接口
-            AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
-
-            //配置需要的公共请求参数
-            //支付完成后，支付宝发起异步通知的地址
-            request.setNotifyUrl(config.getProperty("alipay.notify-url"));
-            //支付完成后，我们想让页面跳转的页面，配置returnUrl
-            request.setReturnUrl(config.getProperty("alipay.return-url"));
-
-            //组装当前业务方法的请求参数
-            JSONObject bizContent = new JSONObject();
-
-            bizContent.put("out_trade_no", order.getOrderId());
-            bizContent.put("total_amount", order.getPayment());
-            Goods goods1 = JSON.parseObject(order.getOrderContent(), Goods.class);
-            bizContent.put("subject", goods1.getTitle());
-            bizContent.put("product_code", "FAST_INSTANT_TRADE_PAY");
-
-            request.setBizContent(bizContent.toString());
-            //    执行请求 调用支付宝接口
-            AlipayTradePagePayResponse response = alipayClient.pageExecute(request);
-
-            if (response.isSuccess()) {
-                log.info("调用成功，返回结果 ===> " + response.getBody());
-                return response.getBody();
-            } else {
-                log.info("调用失败，返回码 ===> " + response.getCode() + ", 返回描述 ===> " + response.getMsg());
-                throw new RuntimeException("创建支付交易失败");
-            }
-        } catch (AlipayApiException e) {
-            e.printStackTrace();
-            throw new RuntimeException("创建支付交易失败");
-        }
+           return this.getTradeCode(order);
     }
 
+    /**
+     * 通过订单编号支付
+     * @param orderNo 订单编号
+     * @return 支付宝支付页面
+     */
+    @Override
+    public String tradeCreateByOrderNo(String orderNo) {
+        Order orderByOrderNo = orderService.getOrderByOrderNo(orderNo);
+        return this.getTradeCode(orderByOrderNo);
+    }
+
+    //调用支付宝接口
+    private  String getTradeCode(Order order){
+        try {
+        //调用支付宝接口
+        AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
+
+        //配置需要的公共请求参数
+        //支付完成后，支付宝发起异步通知的地址
+        request.setNotifyUrl(config.getProperty("alipay.notify-url"));
+        //支付完成后，我们想让页面跳转的页面，配置returnUrl
+        request.setReturnUrl(config.getProperty("alipay.return-url"));
+
+        //组装当前业务方法的请求参数
+        JSONObject bizContent = new JSONObject();
+
+        bizContent.put("out_trade_no", order.getOrderId());
+        bizContent.put("total_amount", order.getPayment());
+        Goods goods1 = JSON.parseObject(order.getOrderContent(), Goods.class);
+        bizContent.put("subject", goods1.getTitle());
+        bizContent.put("product_code", "FAST_INSTANT_TRADE_PAY");
+
+        request.setBizContent(bizContent.toString());
+        //    执行请求 调用支付宝接口
+        AlipayTradePagePayResponse response = alipayClient.pageExecute(request);
+
+        if (response.isSuccess()) {
+            log.info("调用成功，返回结果 ===> " + response.getBody());
+            return response.getBody();
+        } else {
+            log.info("调用失败，返回码 ===> " + response.getCode() + ", 返回描述 ===> " + response.getMsg());
+            throw new RuntimeException("创建支付交易失败");
+        }
+    } catch (AlipayApiException e) {
+        e.printStackTrace();
+        throw new RuntimeException("创建支付交易失败");
+    }
+    }
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void processOrder(Map<String, String> params) {
@@ -161,7 +176,7 @@ public class AlipayServiceImpl implements AlipayService {
                 log.info("调用成功，返回结果 ===> " + response.getBody());
             } else {
                 log.info("调用失败，返回码 ===> " + response.getCode() + ", 返回描述 ===> " + response.getMsg());
-                //throw new RuntimeException("关单接口的调用失败");
+                throw new RuntimeException("关单接口的调用失败");
             }
         } catch (AlipayApiException e) {
             e.printStackTrace();

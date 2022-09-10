@@ -46,6 +46,13 @@ public class AlipayController {
         String s = alipayService.tradeCreate(orderVo);
         return ResponseResult.okResult(s);
     }
+
+    @GetMapping("/trade/{orderNo}")
+    public ResponseResult tradePageByOrderNo(@PathVariable @NotNull String orderNo){
+        String s = alipayService.tradeCreateByOrderNo(orderNo);
+        return ResponseResult.okResult(s);
+    }
+
     /**
      * 支付宝支付异步通知接口
      * @param params 订单参数

@@ -1,5 +1,6 @@
 package com.hechi.niumall.controller.orders;
 
+import com.hechi.niumall.constants.SystemConstants;
 import com.hechi.niumall.result.ResponseResult;
 import com.hechi.niumall.service.OrderService;
 import com.hechi.niumall.utils.SecurityUtils;
@@ -37,5 +38,15 @@ public class OrderController {
         return orderService.getOrderByUserIdFornotPay(userId, page);
     }
 
+    /**
+     * 查询已支付订单
+     * @param page
+     * @return
+     */
+    @RequestMapping("/userOrderpayed/{page}")
+    public ResponseResult getuserOrderpayedByUserId(@PathVariable Integer page){
+        Long userId = SecurityUtils.getUserId();
+        return orderService.getOrderByUserIdwithStatus(userId, page, SystemConstants.ORDER_PAID);
+    }
 
 }

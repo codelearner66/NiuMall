@@ -32,31 +32,33 @@ public class SystemConstants {
     /**
      * 已发货
      */
-    public static final int ORDER_SHIPPED=4;
+    public static final int ORDER_SHIPPED = 4;
     /**
      * 交易成功
      */
-    public static final int ORDER_DONE=5;
+    public static final int ORDER_DONE = 5;
     /**
      * 交易关闭
      */
-    public static final int ORDER_CLOSED=6;
-//用户取消订单
-    public static final int ORDER_USER_CLOSED=7;
+    public static final int ORDER_CLOSED = 6;
+    /**
+     *用户取消订单
+     */
+    public static final int ORDER_USER_CLOSED = 7;
     /**
      * 退款中
      */
-    public  static final int REFUND_PROCESSING=8;
+    public static final int REFUND_PROCESSING = 8;
 
 
     /**
      * 已退款
      */
-    public  static final int REFUND_SUCCESS=9;
+    public static final int REFUND_SUCCESS = 9;
 
     /**
      * 退款异常
      */
-    public  static final int  REFUND_ABNORMAL=10;
+    public static final int REFUND_ABNORMAL = 10;
 
 }

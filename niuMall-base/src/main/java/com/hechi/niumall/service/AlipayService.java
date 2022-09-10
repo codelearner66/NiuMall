@@ -9,6 +9,9 @@ public interface AlipayService {
 //    生成订单
     String tradeCreate(orderVo goods);
 
+    //    生成订单
+    String tradeCreateByOrderNo(String orderNo);
+
     void processOrder(Map<String, String> params);
 
     void cancelOrder(String orderNo);

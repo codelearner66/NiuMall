@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
+
 @Slf4j
 @Service
 public class BalancePayServiceImpl implements BalancePayService {
@@ -32,6 +33,7 @@ public class BalancePayServiceImpl implements BalancePayService {
     RefundInfoService refundInfoService;
 
     private final ReentrantLock lock = new ReentrantLock();
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public String tradeCreate(orderVo goods) {
@@ -39,7 +41,7 @@ public class BalancePayServiceImpl implements BalancePayService {
         //生成订单
         ResponseResult order1 = orderService.createOrder(goods);
         //更新订单
-        Order data = (Order)order1.getData();
+        Order data = (Order) order1.getData();
         data.setOrderStatus(SystemConstants.ORDER_PAID);
 
         String no = OrderNoUtils.getNo();
@@ -48,15 +50,15 @@ public class BalancePayServiceImpl implements BalancePayService {
 
         data.setPaymentTime(new Date());
 
-        if (lock.tryLock()){
+        if (lock.tryLock()) {
             try {
                 ResponseResult result = orderService.updateOrder(data);
                 // 扣除用户余额
                 LoginUser loginUser = SecurityUtils.getLoginUser();
                 SysUser user = loginUser.getUser();
-                user.setBalance(user.getBalance()-goods.getSum());
+                user.setBalance(user.getBalance() - goods.getSum());
                 sysUserService.updataUser(user);
-            }finally {
+            } finally {
                 lock.unlock();
             }
 
@@ -100,7 +102,7 @@ public class BalancePayServiceImpl implements BalancePayService {
         SysUser user = loginUser.getUser();
         String totalFee = refund.getTotalFee();
         String substring = totalFee.substring(0, totalFee.length() - 3);
-        user.setBalance(user.getBalance()+Long.parseLong(substring));
+        user.setBalance(user.getBalance() + Long.parseLong(substring));
         boolean b = sysUserService.updataUser(user);
 //        更新退款单状态
         if (b) {
@@ -108,9 +110,9 @@ public class BalancePayServiceImpl implements BalancePayService {
             refInfo.setRefundStatus(String.valueOf(SystemConstants.REFUND_SUCCESS));
             orderByOrderNo.setOrderStatus(SystemConstants.REFUND_SUCCESS);
 
-        }else {
+        } else {
             log.info("余额退款失败！");
-            user.setBalance(user.getBalance()-Long.parseLong(refund.getTotalFee()));
+            user.setBalance(user.getBalance() - Long.parseLong(refund.getTotalFee()));
             sysUserService.updataUser(user);
             refInfo.setRefundStatus(String.valueOf(SystemConstants.REFUND_ABNORMAL));
             orderByOrderNo.setOrderStatus(SystemConstants.REFUND_ABNORMAL);
