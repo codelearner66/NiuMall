@@ -6,7 +6,6 @@ import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.request.*;
 import com.alipay.api.response.*;
-import com.google.gson.internal.LinkedTreeMap;
 import com.hechi.niumall.constants.SystemConstants;
 import com.hechi.niumall.entity.Goods;
 import com.hechi.niumall.entity.Order;
@@ -23,9 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Service
@@ -45,20 +42,24 @@ public class AlipayServiceImpl implements AlipayService {
     SysUserService sysUserService;
     @Resource
     private Environment config;
+    @Autowired
+    RabbitMqProdcer prodcer;
 
     private final ReentrantLock lock = new ReentrantLock();
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public String tradeCreate(orderVo goods) {
-            log.info("生成订单");
-            ResponseResult result = orderService.createOrder(goods);
-            Order order = (Order) result.getData();
-           return this.getTradeCode(order);
+        log.info("生成订单");
+        ResponseResult result = orderService.createOrder(goods);
+        Order order = (Order) result.getData();
+        prodcer.producerOder(order);
+        return this.getTradeCode(order);
     }
 
     /**
      * 通过订单编号支付
+     *
      * @param orderNo 订单编号
      * @return 支付宝支付页面
      */
@@ -69,46 +70,47 @@ public class AlipayServiceImpl implements AlipayService {
     }
 
     //调用支付宝接口
-    private  String getTradeCode(Order order){
+    private String getTradeCode(Order order) {
         try {
-        //调用支付宝接口
-        AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
+            //调用支付宝接口
+            AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
 
-        //配置需要的公共请求参数
-        //支付完成后，支付宝发起异步通知的地址
-        request.setNotifyUrl(config.getProperty("alipay.notify-url"));
-        //支付完成后，我们想让页面跳转的页面，配置returnUrl
-        request.setReturnUrl(config.getProperty("alipay.return-url"));
+            //配置需要的公共请求参数
+            //支付完成后，支付宝发起异步通知的地址
+            request.setNotifyUrl(config.getProperty("alipay.notify-url"));
+            //支付完成后，我们想让页面跳转的页面，配置returnUrl
+            request.setReturnUrl(config.getProperty("alipay.return-url"));
 
-        //组装当前业务方法的请求参数
-        JSONObject bizContent = new JSONObject();
+            //组装当前业务方法的请求参数
+            JSONObject bizContent = new JSONObject();
 
-        bizContent.put("out_trade_no", order.getOrderId());
-        bizContent.put("total_amount", order.getPayment());
-        Goods goods1 = JSON.parseObject(order.getOrderContent(), Goods.class);
-        bizContent.put("subject", goods1.getTitle());
-        bizContent.put("product_code", "FAST_INSTANT_TRADE_PAY");
+            bizContent.put("out_trade_no", order.getOrderId());
+            bizContent.put("total_amount", order.getPayment());
+            Goods goods1 = JSON.parseObject(order.getOrderContent(), Goods.class);
+            bizContent.put("subject", goods1.getTitle());
+            bizContent.put("product_code", "FAST_INSTANT_TRADE_PAY");
 
-        request.setBizContent(bizContent.toString());
-        //    执行请求 调用支付宝接口
-        AlipayTradePagePayResponse response = alipayClient.pageExecute(request);
+            request.setBizContent(bizContent.toString());
+            //    执行请求 调用支付宝接口
+            AlipayTradePagePayResponse response = alipayClient.pageExecute(request);
 
-        if (response.isSuccess()) {
-            log.info("调用成功，返回结果 ===> " + response.getBody());
-            return response.getBody();
-        } else {
-            log.info("调用失败，返回码 ===> " + response.getCode() + ", 返回描述 ===> " + response.getMsg());
+            if (response.isSuccess()) {
+                log.info("调用成功，返回结果 ===> " + response.getBody());
+                return response.getBody();
+            } else {
+                log.info("调用失败，返回码 ===> " + response.getCode() + ", 返回描述 ===> " + response.getMsg());
+                throw new RuntimeException("创建支付交易失败");
+            }
+        } catch (AlipayApiException e) {
+            e.printStackTrace();
             throw new RuntimeException("创建支付交易失败");
         }
-    } catch (AlipayApiException e) {
-        e.printStackTrace();
-        throw new RuntimeException("创建支付交易失败");
     }
-    }
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void processOrder(Map<String, String> params) {
-        log.info("处理订单");
+        log.info("处理订单params{}",params);
         //获取订单号
         String outTradeNo = params.get("out_trade_no");
 
@@ -136,7 +138,7 @@ public class AlipayServiceImpl implements AlipayService {
                 orderByOrderNo.setPaymentTime(new Date());
 
                 orderService.updateOrder(orderByOrderNo);
-                 //  果是余额充值就更新用户余额
+                //  果是余额充值就更新用户余额
                 if (orderByOrderNo.getGoodsId() == 0L) {
                     SysUser byId = sysUserService.getById(orderByOrderNo.getUserId());
                     if (byId != null) {
@@ -229,43 +231,54 @@ public class AlipayServiceImpl implements AlipayService {
      * @param orderNo
      */
     @Override
-    public void checkOrderStatus(String orderNo) {
+    public boolean checkOrderStatus(String orderNo) {
         log.warn("根据订单号核实订单状态 ===> {}", orderNo);
+        if (lock.tryLock()) {
+            try {
+                String result = this.queryOrder(orderNo);
+                if (result == null) {
+                    log.info("核实订单未创建======》{}", orderNo);
+                    Order order = new Order();
+                    order.setOrderId(orderNo);
+                    order.setOrderStatus(SystemConstants.ORDER_CLOSED);
+                    //  更新本地订单状态
+                    orderService.updateOrder(order);
+                    return true;
+                }
 
-        String result = this.queryOrder(orderNo);
-        if (result == null) {
-            log.warn("核实订单未创建======》{}", orderNo);
-            Order order = new Order();
-            order.setOrderId(orderNo);
-            order.setOrderStatus(SystemConstants.ORDER_CLOSED);
-            //  更新本地订单状态
-            orderService.updateOrder(order);
-            return;
+                //   解析查单响应结果
+                JSONObject jsonObject = JSON.parseObject(result);
+                HashMap<String, HashMap<String, String>> hashMap = JSON.parseObject(result, HashMap.class);
+                log.info("hashMap=={}", hashMap.values());
+
+                Object next = jsonObject.get("alipay_trade_query_response");
+                HashMap<String,String> keyData = JSON.parseObject(next.toString(), HashMap.class);
+
+                log.info("keyData=>{}", keyData);
+                //获取订单状态
+                String tradeStatus = keyData.get("trade_status");
+                if (AliPayTradeState.NOTPAY.getType().equals(tradeStatus)) {
+                    log.warn("核实订单未支付 ===> {}", orderNo);
+                    this.cancelOrder(orderNo);
+                    return true;
+                }
+                if (AliPayTradeState.SUCCESS.getType().equals(tradeStatus)) {
+                    log.warn("核实订单已支付 ===> {}", orderNo);
+                    //如果订单已支付，则更新商户端订单状态
+                    Order orderByOrderNo = orderService.getOrderByOrderNo(orderNo);
+                    if (orderByOrderNo.getOrderStatus()==1){
+                        Goods goods = JSON.parseObject(orderByOrderNo.getOrderContent(), Goods.class);
+                        keyData.put("subject",goods.getTitle());
+                        keyData.put("buyer_id",keyData.get("buyer_user_id"));
+                        this.processOrder(keyData);
+                        return true;
+                    }
+                }
+            } finally {
+                lock.unlock();
+            }
         }
-
-//        解析查单响应结果
-        System.out.println(result);
-        HashMap<String, LinkedTreeMap> hashMap = JSON.parseObject(result, HashMap.class);
-
-        LinkedTreeMap alipayTradeQueryResponse = hashMap.get("alipay_trade_query_response");
-
-        String tradeStatus = (String) alipayTradeQueryResponse.get("trade_status");
-        if (AliPayTradeState.NOTPAY.getType().equals(tradeStatus)) {
-            log.warn("核实订单未支付 ===> {}", orderNo);
-            this.cancelOrder(orderNo);
-        }
-        if (AliPayTradeState.SUCCESS.getType().equals(tradeStatus)) {
-            log.warn("核实订单已支付 ===> {}", orderNo);
-            //如果订单已支付，则更新商户端订单状态
-            Order order = new Order();
-            order.setOrderId(orderNo);
-            order.setOrderStatus(SystemConstants.ORDER_PAID);
-            orderService.updateOrder(order);
-            //并记录支付日志
-
-            paymentLogService.createPaymentInfoForAliPay(alipayTradeQueryResponse);
-        }
-
+        return true;
     }
 
     /**

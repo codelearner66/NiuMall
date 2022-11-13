@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.Date;
 /**
  * niumall商城-订单(Order)表实体类
@@ -18,7 +19,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("niumall.order")
-public class Order{
+public class Order implements Serializable {
     @TableId
     private String id;
 

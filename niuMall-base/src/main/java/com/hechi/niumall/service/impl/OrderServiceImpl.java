@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -51,17 +50,33 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return ResponseResult.okResult(one);
     }
 
+    /**
+     * 分页获取用户所有订单
+     *
+     * @param userId 用户id
+     * @param pages  页码
+     * @return 分页数据
+     */
     @Override
-    public ResponseResult getOrderByUserId(Long userId) {
+    public ResponseResult getOrderByUserId(Long userId, Integer pages) {
         LambdaQueryWrapper<Order> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Order::getUserId, userId);
-        List<Order> list = list(queryWrapper);
-        if (list.size() > 0) {
-            return ResponseResult.okResult(list);
+        Page<Order> page1 = new Page<>(pages, 10);
+        page(page1, queryWrapper);
+
+        if (page1.getRecords() != null) {
+            return ResponseResult.okResult(page1);
         }
         return ResponseResult.errorResult(AppHttpCodeEnum.ORDER_USER_IS_NULL);
     }
 
+    /**
+     * 用户未支付订单
+     *
+     * @param userId 用户id
+     * @param page   页码
+     * @return 分页数据
+     */
     @Override
     public ResponseResult getOrderByUserIdFornotPay(Long userId, int page) {
         return this.getResult(userId, page, SystemConstants.ORDER_NOT_PAY);
@@ -69,39 +84,50 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     /**
      * 查询订单数据
+     *
      * @param userId 用户id
-     * @param page  页码
+     * @param page   页码
      * @param status 订单状态
      * @return 分页数据
      */
-    private ResponseResult getResult(Long userId, int page,int status){
+    private ResponseResult getResult(Long userId, int page, int... status) {
         LambdaQueryWrapper<Order> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Order::getUserId, userId)
-                .eq(Order ::getOrderStatus,status);
-        Page<Order> orderPage = new Page<>(page,10);
+                .eq(Order::getOrderStatus, status[0]);
+        for (int j : status) {
+            queryWrapper.or().eq(Order::getOrderStatus, j);
+        }
+        Page<Order> orderPage = new Page<>(page, 10);
         page(orderPage, queryWrapper);
         return ResponseResult.okResult(orderPage);
     }
 
     @Override
-    public ResponseResult getOrderByUserIdwithStatus(Long userId, int page, Integer status) {
+    public ResponseResult getOrderByUserIdwithStatus(Long userId, Integer page, int... status) {
         return this.getResult(userId, page, status);
     }
+
 
     @Override
     public ResponseResult getOrderByUserIdForPayed(Long userId, int page) {
         return this.getResult(userId, page, SystemConstants.ORDER_PAID);
     }
 
+    /**
+     * 根据订单编号获取订单信息
+     *
+     * @param outTradeNo 订单编号
+     * @return 订单信息
+     */
     @Override
     public Order getOrderByOrderNo(String outTradeNo) {
-        LambdaQueryWrapper<Order> lambda=new LambdaQueryWrapper<>();
-       lambda.eq(Order::getOrderId, outTradeNo);
+        LambdaQueryWrapper<Order> lambda = new LambdaQueryWrapper<>();
+        lambda.eq(Order::getOrderId, outTradeNo);
         return getOne(lambda);
     }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
-
     public ResponseResult createOrder(orderVo goods) {
 //        检查已有未完成订单就直接返回给用户
         LambdaQueryWrapper<Order> queryWrapper = new LambdaQueryWrapper<>();
@@ -130,7 +156,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         // 设置实付金额
         order.setPayment(goods.getSum() + ".00");
         //设置支付类型  动态指定
-        order.setPaymentType(goods.getPaymentType()==1?SystemConstants.ALI_PAY:SystemConstants.BALANCE_PAY);
+        order.setPaymentType(goods.getPaymentType() == 1 ? SystemConstants.ALI_PAY : SystemConstants.BALANCE_PAY);
         //设置订单状态
         order.setOrderStatus(SystemConstants.ORDER_NOT_PAY);
         //设置邮费
@@ -141,25 +167,25 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         //保存订单
         save(order);
 //  更新商品信息
-        goods1.setSalesCount(goods1.getSalesCount()+goods.getNum());
-        goods1.setInventory(goods1.getInventory()-goods.getNum());
-        Random random=new Random();
-        goods1.setAccessCount(goods1.getAccessCount()+random.nextInt(10));
+        goods1.setSalesCount(goods1.getSalesCount() + goods.getNum());
+        goods1.setInventory(goods1.getInventory() - goods.getNum());
+        Random random = new Random();
+        goods1.setAccessCount(goods1.getAccessCount() + random.nextInt(10));
         goodsService.updateGoods(goods1);
         return ResponseResult.okResult(order);
     }
 
+    /**
+     * 更新订单信息
+     *
+     * @param order 订单信息
+     * @return
+     */
     @Override
     public ResponseResult updateOrder(Order order) {
-        LambdaQueryWrapper<Order> lambdaQueryWrapper=new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(Order::getOrderId,order.getOrderId());
-        Order one = getOne(lambdaQueryWrapper);
-        if (one!=null){
-            LambdaUpdateWrapper<Order> updateWrap=new LambdaUpdateWrapper<>();
-            updateWrap.eq(Order ::getOrderId,order.getOrderId());
-            update(order,updateWrap);
-            return ResponseResult.okResult();
-        }
-        return ResponseResult.errorResult(AppHttpCodeEnum.ORDER_IS_NULL);
+        LambdaUpdateWrapper<Order> updateWrap = new LambdaUpdateWrapper<>();
+        updateWrap.eq(Order::getOrderId, order.getOrderId());
+        boolean update = update(order, updateWrap);
+        return update ? ResponseResult.okResult() : ResponseResult.errorResult(AppHttpCodeEnum.ORDER_IS_NULL);
     }
 }

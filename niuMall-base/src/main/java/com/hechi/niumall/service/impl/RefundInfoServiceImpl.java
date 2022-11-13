@@ -32,6 +32,7 @@ public class RefundInfoServiceImpl extends ServiceImpl<RefundInfoMapper, RefundI
 
     /**
      * 新建退款单(微信)
+     *
      * @param refInfo 订单信息 包括 用户订单id 退款原因  paymentType支付类型（余额支付或支付宝支付）
      * @return 订单信息
      */
@@ -39,11 +40,11 @@ public class RefundInfoServiceImpl extends ServiceImpl<RefundInfoMapper, RefundI
     @Override
     public RefundInfo createRefundByOrderNo(RefundInfo refInfo) {
         LambdaQueryWrapper<RefundInfo> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(RefundInfo ::getOrderNo,refInfo.getOrderNo())
-        .eq(RefundInfo::getRefundStatus,String.valueOf(SystemConstants.REFUND_PROCESSING));
+        wrapper.eq(RefundInfo::getOrderNo, refInfo.getOrderNo())
+                .eq(RefundInfo::getRefundStatus, String.valueOf(SystemConstants.REFUND_PROCESSING));
         RefundInfo one = getOne(wrapper);
-        if (one!=null){
-            return  one;
+        if (one != null) {
+            return one;
         }
         Order orderByOrderNo = orderService.getOrderByOrderNo(refInfo.getOrderNo());
 //        设置用户id
@@ -64,34 +65,35 @@ public class RefundInfoServiceImpl extends ServiceImpl<RefundInfoMapper, RefundI
         orderService.updateOrder(orderByOrderNo);
         boolean save = save(refInfo);
         if (!save) {
-            return  null;
+            return null;
         }
         return refInfo;
     }
 
     /**
      * 更新退款状态（微信）
+     *
      * @param content
      */
     @Override
     public void updateRefund(String content) {
 //        将json字符串 转化为 Map
-        HashMap<String,String> hashMap = JSON.parseObject(content, HashMap.class);
+        HashMap<String, String> hashMap = JSON.parseObject(content, HashMap.class);
         //根据退款单编号修改退款单
         LambdaQueryWrapper<RefundInfo> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(RefundInfo::getRefundNo,hashMap.get("out_refund_no"));
+        wrapper.eq(RefundInfo::getRefundNo, hashMap.get("out_refund_no"));
         //设置要修改的字段
         RefundInfo refundInfo = new RefundInfo();
 
         refundInfo.setRefundId(hashMap.get("refund_id"));//微信支付退款单号
 
         //查询退款和申请退款中的返回参数
-        if(hashMap.get("status") != null){
+        if (hashMap.get("status") != null) {
             refundInfo.setRefundStatus(hashMap.get("status"));//退款状态
             refundInfo.setContentReturn(content);//将全部响应结果存入数据库的content字段
         }
         //退款回调中的回调参数
-        if(hashMap.get("refund_status") != null){
+        if (hashMap.get("refund_status") != null) {
             refundInfo.setRefundStatus(hashMap.get("refund_status"));//退款状态
             refundInfo.setContentNotify(content);//将全部响应结果存入数据库的content字段
         }
@@ -113,8 +115,8 @@ public class RefundInfoServiceImpl extends ServiceImpl<RefundInfoMapper, RefundI
 
     @Override
     public void updateRefundForAliPay(RefundInfo refInfo) {
-       LambdaQueryWrapper<RefundInfo> queryWrapper = new LambdaQueryWrapper<>();
-       queryWrapper.eq(RefundInfo ::getRefundNo,refInfo.getRefundNo());
-       baseMapper.update(refInfo,queryWrapper);
+        LambdaQueryWrapper<RefundInfo> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(RefundInfo::getRefundNo, refInfo.getRefundNo());
+        baseMapper.update(refInfo, queryWrapper);
     }
 }

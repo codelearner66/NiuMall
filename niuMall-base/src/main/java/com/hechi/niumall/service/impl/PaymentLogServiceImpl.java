@@ -35,6 +35,24 @@ public class PaymentLogServiceImpl extends ServiceImpl<PaymentLogMapper, Payment
     public void createPaymentInfoForAliPay(Map<String, String> params) {
         log.info("记录支付日志");
 
+        /*
+         * {
+         *   "msg": "Success",
+         *   "code": "10000",
+         *   "buyer_user_id": "2088622958128812",
+         *   "send_pay_date": "2022-10-29 23:29:29",
+         *   "invoice_amount": "0.00",
+         *   "out_trade_no": "NIUMALL_ORDER_2022102923290651374",
+         *   "total_amount": "8000.00",
+         *   "buyer_user_type": "PRIVATE",
+         *   "trade_status": "TRADE_SUCCESS",
+         *   "trade_no": "2022102922001428810501899533",
+         *   "buyer_logon_id": "fjr***@sandbox.com",
+         *   "receipt_amount": "0.00",
+         *   "point_amount": "0.00",
+         *   "buyer_pay_amount": "0.00"
+         * }
+         */
         //获取订单号
         String orderNo = params.get("out_trade_no");
         //业务编号
@@ -47,8 +65,6 @@ public class PaymentLogServiceImpl extends ServiceImpl<PaymentLogMapper, Payment
         String subject = params.get("subject");
         // 支付平台用户帐号
         String buyerId = params.get("buyer_id");
-        //支付平台商家帐号
-        String sellerId = params.get("seller_id");
 //        付款时间
         String gmtPayment = params.get("gmt_payment");
 

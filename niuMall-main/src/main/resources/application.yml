@@ -2,7 +2,7 @@ server:
   port: 8081
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/niumall?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8
+    url: jdbc:mysql://localhost:3306/niumall?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8
     username: root
     password: ccx2019
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -27,6 +27,25 @@ spring:
     multipart:
       max-request-size: 1GB  # 上传文件总的最大值 默认10MB
       max-file-size: 5MB #单个文件最大值 默认10MB
+#      rabbitmq配置
+  rabbitmq:
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    listener:
+      direct:
+        acknowledge-mode: manual
+      simple:
+        acknowledge-mode: manual # 设置自动确定(ack) manual:为手动确定(即需要调用channel.basicAck才会从队列中删除消息)
+        prefetch: 1              #表示消费者端每次从队列拉取多少个消息进行消费,直到手动确认消费完毕后,才会继续拉取下一条
+        default-requeue-rejected: false #消费被拒绝时 true：为重回队列 false为否
+        retry:
+          enabled: true         #是否支持重试,默认false
+          max-attempts: 5       #重试最大次数,默认3次
+          max-interval: 2000ms #重试最大间隔时间
 #mybatis plus配置
 mybatis-plus:
   configuration:
@@ -38,3 +57,5 @@ mybatis-plus:
       logic-delete-value: 1
       logic-not-delete-value: 0
       id-type: auto
+logging:
+  config: classpath:logback-spring.xml

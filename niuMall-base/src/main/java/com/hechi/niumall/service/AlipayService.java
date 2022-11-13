@@ -18,7 +18,7 @@ public interface AlipayService {
 
     String queryOrder(String orderNo);
 
-    void checkOrderStatus(String orderNo);
+    boolean checkOrderStatus(String orderNo) throws InterruptedException;
 
     void refund(RefundInfo refInfo);
 

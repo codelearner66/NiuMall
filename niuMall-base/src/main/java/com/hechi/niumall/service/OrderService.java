@@ -18,12 +18,10 @@ public interface OrderService extends IService<Order> {
       */
 
     ResponseResult getOrderById(Long id);
-
     /**
      *  通过 用户id 获取订单
       */
-
-    ResponseResult getOrderByUserId(Long userId);
+    ResponseResult getOrderByUserId(Long userId,Integer pages);
 
     /**
      * 分页查询未支付订单
@@ -48,7 +46,7 @@ public interface OrderService extends IService<Order> {
      * @param status 订单状态
      * @return
      */
-    ResponseResult getOrderByUserIdwithStatus(Long userId,int page,Integer status);
+    ResponseResult getOrderByUserIdwithStatus(Long userId,Integer page,int... status);
 
 //    ResponseResult getOrderByUserIdForPayed(Long userId,int page);
     /**
@@ -62,6 +60,8 @@ public interface OrderService extends IService<Order> {
       */
 
     ResponseResult updateOrder(Order order);
+
+
 
     Order getOrderByOrderNo(String outTradeNo);
 }
