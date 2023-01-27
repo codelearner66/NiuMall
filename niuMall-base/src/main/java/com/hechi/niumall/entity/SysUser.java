@@ -1,13 +1,11 @@
 package com.hechi.niumall.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Pattern;
 import java.util.Date;
 
 /**
@@ -20,6 +18,8 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 @TableName("sys_user")
 public class SysUser  {
     //主键
@@ -39,22 +39,26 @@ public class SysUser  {
     //账号状态（0正常 1停用）
     private String status;
     //邮箱
-    @Email
+//    @Email
     private String email;
     //手机号
-    @Pattern(regexp = "^[1][3,4,5,6,7,8,9][0-9]{9}$", message = "手机号格式有误")
+//    @Pattern(regexp = "^[1][3,4,5,6,7,8,9][0-9]{9}$", message = "手机号格式有误")
     private String phonenumber;
     //用户性别（0男，1女，2未知）
     private String sex;
     //头像
     private String avatar;
     //创建人的用户id
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Long createBy;
     //创建时间
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date createTime;
     //更新人
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Long updateBy;
     //更新时间
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date updateTime;
     //删除标志（0代表未删除，1代表已删除）
     private Integer delFlag;

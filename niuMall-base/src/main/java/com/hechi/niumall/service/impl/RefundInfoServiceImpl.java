@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * (RefundInfo)表服务实现类
@@ -103,8 +102,10 @@ public class RefundInfoServiceImpl extends ServiceImpl<RefundInfoMapper, RefundI
     }
 
     @Override
-    public List<RefundInfo> getNoRefundOrderByDuration(int minutes) {
-        return null;
+    public RefundInfo getRefundOrderByOrderNo(RefundInfo refInfo){
+        LambdaQueryWrapper<RefundInfo> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(RefundInfo ::getOrderNo,refInfo.getOrderNo());
+        return getOne(queryWrapper);
     }
 
     @Override

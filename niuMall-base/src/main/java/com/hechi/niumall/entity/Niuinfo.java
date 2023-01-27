@@ -22,7 +22,7 @@ public class Niuinfo  implements Serializable {
     //消息id@TableId
     private Long id;
     //发送者昵称
-    private String froname;
+    private String fromname;
     //发送者id
     private Long fromid;
     //接收者昵称

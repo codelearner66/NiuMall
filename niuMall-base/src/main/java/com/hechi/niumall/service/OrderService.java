@@ -3,7 +3,10 @@ package com.hechi.niumall.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.hechi.niumall.entity.Order;
 import com.hechi.niumall.result.ResponseResult;
+import com.hechi.niumall.vo.OrderListforSell;
 import com.hechi.niumall.vo.orderVo;
+
+import java.util.List;
 
 
 /**
@@ -64,5 +67,25 @@ public interface OrderService extends IService<Order> {
 
 
     Order getOrderByOrderNo(String outTradeNo);
+
+    /**
+     * 获取分类销量前十
+     * @return
+     */
+    public List<OrderListforSell> getListforSelL();
+
+
+    /**
+     * 管理员获取所有用户订单
+     * @param pages 分页页码
+     * @return 用户订单信息
+     */
+    ResponseResult getAllOrder(Integer pages);
+
+    public ResponseResult getOrderWithStatus(Integer page, int... status);
+
+    ResponseResult queryOrderByOrderId(String orderId);
+
+    ResponseResult shopped(Order order);
 }
 

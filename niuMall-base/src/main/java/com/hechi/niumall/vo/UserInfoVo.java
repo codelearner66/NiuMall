@@ -29,5 +29,7 @@ public class UserInfoVo {
     private Long balance;
     private String phonenumber;
     private String email;
+    //用户类型：0代表普通用户，1代表管理员
+    private String type;
 
 }

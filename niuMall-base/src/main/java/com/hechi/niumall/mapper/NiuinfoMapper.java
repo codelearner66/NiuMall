@@ -20,9 +20,23 @@ import java.util.List;
 public interface NiuinfoMapper extends BaseMapper<Niuinfo> {
     /**
      * 获取未读信息用户列表
+     *
      * @param userId 用户id
      * @return 未读用户信息列表
      */
     public List<NiuinfoVo> getAllUnreadInfoList(@Param("userId") Long userId);
+
+    /**
+     * 获取最近发过消息的好友
+     * @param userId
+     * @return
+     */
+    public List<NiuinfoVo> getAlllastUser(@Param("userId") Long userId);
+
+    public NiuinfoVo getUnreadInfoById(@Param("fromId") Long fromId, @Param("toId") Long toId);
+
+    public  String getLastInfo(@Param("fromId") Long fromId, @Param("toId") Long toId);
+
+    Niuinfo getNiuinfoByContent(Niuinfo niuinfo);
 }
 

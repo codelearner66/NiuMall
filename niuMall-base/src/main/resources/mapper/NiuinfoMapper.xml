@@ -1,27 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hechi.niumall.mapper.NiuinfoMapper">
-  <resultMap id="BaseResultMap" type="com.hechi.niumall.entity.Niuinfo">
-    <id column="Id" jdbcType="BIGINT" property="id" />
-    <result column="FronName" jdbcType="VARCHAR" property="fronname" />
-    <result column="FromId" jdbcType="BIGINT" property="fromid" />
-    <result column="ToName" jdbcType="VARCHAR" property="toname" />
-    <result column="ToId" jdbcType="BIGINT" property="toid" />
-    <result column="Content" jdbcType="VARCHAR" property="content" />
-    <result column="type" jdbcType="INTEGER" property="type" />
-    <result column="Flag" jdbcType="INTEGER" property="flag" />
-    <result column="Deleted" jdbcType="INTEGER" property="deleted" />
-    <result column="SendTime" jdbcType="TIMESTAMP" property="sendtime" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    Id, FronName, FromId, ToName, ToId, Content, `type`, Flag, Deleted, SendTime
-  </sql>
+    <resultMap id="BaseResultMap" type="com.hechi.niumall.entity.Niuinfo">
+        <id column="Id" jdbcType="BIGINT" property="id"/>
+        <result column="FromName" jdbcType="VARCHAR" property="fromname"/>
+        <result column="FromId" jdbcType="BIGINT" property="fromid"/>
+        <result column="ToName" jdbcType="VARCHAR" property="toname"/>
+        <result column="ToId" jdbcType="BIGINT" property="toid"/>
+        <result column="Content" jdbcType="VARCHAR" property="content"/>
+        <result column="type" jdbcType="INTEGER" property="type"/>
+        <result column="Flag" jdbcType="INTEGER" property="flag"/>
+        <result column="Deleted" jdbcType="INTEGER" property="deleted"/>
+        <result column="SendTime" jdbcType="TIMESTAMP" property="sendtime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        Id
+        , FromName, FromId, ToName, ToId, Content, `type`, Flag, Deleted, SendTime
+    </sql>
 
-  <select id="getAllUnreadInfoList" resultType="com.hechi.niumall.vo.NiuinfoVo">
-    select *,count(1) as count from niuinfo
-     where toid=${userId}
-         and flag = 0
-         group by fromid
-  </select>
+    <select id="getAllUnreadInfoList" resultType="com.hechi.niumall.vo.NiuinfoVo">
+        select *, count(1) as count
+        from niuinfo
+        where toid=${userId}
+          and fromid != ${userId}
+          and flag = 0
+        group by fromid
+    </select>
+    <select id="getUnreadInfoById" resultType="com.hechi.niumall.vo.NiuinfoVo">
+        select *, count(1) as count
+        from niuinfo
+        where fromid=${fromId}
+          and toId=${toId}
+          and flag = 0
+        group by fromid
+    </select>
+    <select id="getLastInfo" resultType="java.lang.String">
+        select Content
+        from niuinfo
+        where fromid = ${fromId}
+          and toId = ${toId}
+          and flag = 1
+        order by SendTime DESC LIMIT 1
+    </select>
+    <select id="getAlllastUser" resultType="com.hechi.niumall.vo.NiuinfoVo">
+        SELECT *
+        from niuinfo
+        WHERE ToId = ${userId}
+          AND 10 > TIMESTAMPDIFF(DAY,SendTime, NOW())
+          AND TIMESTAMPDIFF(DAY,SendTime, NOW()) >= 0
+        GROUP BY FromId LIMIT 10
+    </select>
+    <select id="getNiuinfoByContent" resultType="com.hechi.niumall.entity.Niuinfo">
+        select *
+        from niuinfo
+        where content = #{content}
+    </select>
+
 
 </mapper>

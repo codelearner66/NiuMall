@@ -3,6 +3,26 @@
   <component name="PersistentConfig">
     <option name="historyConfigList">
       <map>
+        <entry key="">
+          <value>
+            <Config>
+              <option name="daoMvnPath" value="" />
+              <option name="daoName" value="" />
+              <option name="daoPackage" value="generate" />
+              <option name="daoPostfix" value="" />
+              <option name="modelMvnPath" value="" />
+              <option name="modelName" value="" />
+              <option name="modelPackage" value="" />
+              <option name="name" value="" />
+              <option name="overrideXML" value="true" />
+              <option name="primaryKey" value="" />
+              <option name="projectFolder" value="$PROJECT_DIR$" />
+              <option name="tableName" value="" />
+              <option name="xmlMvnPath" value="src/main/resources" />
+              <option name="xmlPackage" value="generator" />
+            </Config>
+          </value>
+        </entry>
         <entry key="niuinfo">
           <value>
             <Config>

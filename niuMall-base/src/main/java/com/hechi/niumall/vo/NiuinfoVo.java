@@ -8,7 +8,7 @@ public class NiuinfoVo {
     //发送者id
     private Long fromid;
     //发送者昵称
-    private String fronname;
+    private String fromname;
     //   头像
     private String url;
 

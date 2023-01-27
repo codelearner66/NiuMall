@@ -3,14 +3,20 @@ package com.hechi.niumall.utils;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.hechi.niumall.entity.Niuinfo;
+import com.hechi.niumall.service.impl.NiuinfoServiceImpl;
+import com.hechi.niumall.vo.NiuinfoVo;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import javax.validation.constraints.NotNull;
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
+import java.util.Date;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -21,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 @Component
 @ServerEndpoint("/socket/api/messageService/{userId}")
-public class WebSocketServer{
+public class WebSocketServer {
     /**
      * 静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。
      */
@@ -34,36 +40,48 @@ public class WebSocketServer{
      * 与某个客户端的连接会话，需要通过它来给客户端发送数据
      */
     private Session session;
+
+    private static ApplicationContext applicationContext;
     /**
      * 接收userId
      */
     private String userId = "";
 
+    public static void setApplicationContext(ApplicationContext applicationContext) {
+        WebSocketServer.applicationContext = applicationContext;
+    }
+
     /**
      * @param userId 将userid为用户token 用户连接时解析token获取用户id
-     * 连接建立成
-     * 功调用的方法
+     *               连接建立成
+     *               功调用的方法
      */
     @OnOpen
     public void onOpen(Session session, @PathParam("userId") String userId) throws Exception {
         this.session = session;
-        if (userId == null||userId.length() == 0) { return; }
+        if (userId == null || userId.length() == 0) {
+            return;
+        }
+        log.info("接收到的token {}", userId);
         Claims claims = JwtUtil.parseJWT(userId);
         String subject;
-        if (claims != null && (subject = claims.getSubject())!=null) {
+        if (claims != null && (subject = claims.getSubject()) != null && !webSocketMap.containsKey(subject)) {
             this.userId = subject;
-        }else { return; }
-
-        log.info("userId  {}",this.userId);
-        if (webSocketMap.containsKey(this.userId)) {
-            webSocketMap.remove(this.userId);
-            //加入set中
-            webSocketMap.put(this.userId, this);
+            log.info("userId  {}", this.userId);
+            if (webSocketMap.containsKey(this.userId) && this.userId != null && this.userId.length() != 0) {
+                webSocketMap.remove(this.userId);
+                //加入set中
+                webSocketMap.put(this.userId, this);
+            } else {
+                if (this.userId != null && this.userId.length() != 0) {
+                    //加入set中
+                    webSocketMap.put(this.userId, this);
+                    //在线数加1
+                    addOnlineCount();
+                }
+            }
         } else {
-            //加入set中
-            webSocketMap.put(this.userId, this);
-            //在线数加1
-            addOnlineCount();
+            return;
         }
         log.info("用户连接:" + this.userId + ",当前在线人数为:" + getOnlineCount());
         //新建方法获取用户未读消息 并将信息封装发送到前台
@@ -93,23 +111,33 @@ public class WebSocketServer{
      * @param message 客户端发送过来的消息
      */
     @OnMessage
-    public void onMessage(String message, Session session) {
+    public void onMessage(@NotNull String message, Session session) {
+
         log.info("用户消息:" + userId + ",报文:" + message);
+
+        NiuinfoServiceImpl niuinfoService = applicationContext.getBean(NiuinfoServiceImpl.class);
         //可以群发消息
-        //消息保存到数据库、redis
-        //todo 设置消息实体类和与其对应的数据表
-        Niuinfo niuinfo=null;
-        if(null != message&&message.length() > 0){
-            niuinfo=JSON.parseObject(message,Niuinfo.class);
+        Niuinfo niuinfo = null;
+
+        Map<String,String> map = JSON.parseObject(message, Map.class);
+        log.info("解析出的map: {},{}",map.keySet(),map.values());
+        if ("ping".equals(map.get("ping"))) {
+            webSocketMap.get(this.userId).sendMessage("pong");
+            return;
         }
-        if (Objects.nonNull(niuinfo)) {
+        if (null != message && message.length() > 0&&!map.containsKey("ping")) {
+            niuinfo = JSON.parseObject(message, Niuinfo.class);
+        }
+        if (Objects.nonNull(niuinfo)&&!map.containsKey("ping")) {
+            niuinfo.setSendtime(new Date());
             try {
                 niuinfo.setFromid(Long.valueOf(this.userId));
+                niuinfoService.addNewInfo(niuinfo);
                 //传送给对应toUserId用户的websocket
-                if (niuinfo.getToid()!=null && webSocketMap.containsKey(niuinfo.getToid().toString())) {
-                    webSocketMap.get(niuinfo.getToid().toString()).sendMessage(message);
+                if (niuinfo.getToid() != null && webSocketMap.containsKey(niuinfo.getToid().toString())) {
+                    NiuinfoVo niuinfo1 = niuinfoService.getNiuinfo(niuinfo.getFromid(), niuinfo.getToid());
+                    webSocketMap.get(niuinfo.getToid().toString()).sendMessage(JSON.toJSONString(niuinfo1));
                 } else {
-                     //   不在线时信息处理
                     //否则不在这个服务器上，发送到mysql或者redis
                     log.error("请求的userId:" + niuinfo.getToid() + "不在该服务器上");
                 }
@@ -118,6 +146,7 @@ public class WebSocketServer{
             }
         }
     }
+
     /**
      * 实现服务
      * 器主动推送
@@ -129,16 +158,17 @@ public class WebSocketServer{
             e.printStackTrace();
         }
     }
+
     /**
-     *发送自定
-     *义消息
+     * 发送自定
+     * 义消息
      **/
     public static void sendInfo(String message, String userId) {
-        log.info("发送消息到:"+userId+"，报文:"+message);
-        if(StringUtils.isNotBlank(userId) && webSocketMap.containsKey(userId)){
+        log.info("发送消息到:" + userId + "，报文:" + message);
+        if (StringUtils.isNotBlank(userId) && webSocketMap.containsKey(userId)) {
             webSocketMap.get(userId).sendMessage(message);
-        }else{
-            log.error("用户"+userId+",不在线！");
+        } else {
+            log.error("用户" + userId + ",不在线！");
         }
     }
 
@@ -148,9 +178,10 @@ public class WebSocketServer{
      */
     @OnError
     public void onError(Session session, Throwable error) {
-        log.error("用户错误:"+this.userId+",原因:"+error.getMessage());
+        log.error("用户错误:" + this.userId + ",原因:" + error.getMessage());
         error.printStackTrace();
     }
+
     //更新在线人数 加一
     public static synchronized void addOnlineCount() {
         WebSocketServer.onlineCount += 1;

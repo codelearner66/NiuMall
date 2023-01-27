@@ -8,10 +8,12 @@ import com.hechi.niumall.result.ResponseResult;
 import com.hechi.niumall.service.OrderService;
 import com.hechi.niumall.service.RefundInfoService;
 import com.hechi.niumall.utils.SecurityUtils;
+import com.hechi.niumall.vo.OrderListforSell;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -21,18 +23,6 @@ public class OrderController {
     @Autowired
     RefundInfoService refundInfoService;
 
-    /**
-     * 管理员查询用户未支付订单
-     *
-     * @param userId
-     * @param page
-     * @return
-     */
-    @RequestMapping("/order/{userId}/{page}")
-    @PreAuthorize("hasAnyAuthority('root','admin')")
-    public ResponseResult getOrdersByUserId(@PathVariable Long userId, @PathVariable Integer page) {
-        return orderService.getOrderByUserIdFornotPay(userId, page);
-    }
 
     /**
      * 用户查询未支付订单
@@ -139,6 +129,12 @@ public class OrderController {
         } else {
             return ResponseResult.errorResult(AppHttpCodeEnum.ORDER_IS_NULL);
         }
+    }
+
+    @GetMapping("/getListforSelL")
+    public ResponseResult getListforSelL() {
+        List<OrderListforSell> listforSelL = orderService.getListforSelL();
+        return ResponseResult.okResult(listforSelL);
     }
 
 }

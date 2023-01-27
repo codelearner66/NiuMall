@@ -108,7 +108,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setNickName("开心的萝卜头");
         user.setSex("0");
-        user.setAvatar("https://miumall-1306251195.cos.ap-chengdu.myqcloud.com/headers/header.png");
+        user.setAvatar("https://miumall-1306251195.cos.ap-chengdu.myqcloud.com/headers/header.jpg");
         user.setCreateTime(new Date());
         boolean save = save(user);
         boolean save1 = false;
@@ -187,5 +187,23 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         user.setAvatar(s);
         this.updataUser(user);
         return s;
+    }
+
+    @Override
+    public List<SysUser> getUserByKey(String key) {
+        LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(SysUser ::getNickName,key)
+                .or()
+                .like(SysUser ::getUserName,key)
+                .last("limit 8");
+        return list(queryWrapper);
+    }
+
+    @Override
+    public Long getUserCount() {
+        LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SysUser ::getType,0);
+        long count = count(queryWrapper);
+        return count;
     }
 }

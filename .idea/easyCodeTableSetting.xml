@@ -19,6 +19,22 @@
             </TableInfoDTO>
           </value>
         </entry>
+        <entry key="com.hechi.niumall.mapper.OrderMapper">
+          <value>
+            <TableInfoDTO>
+              <option name="comment" value="niumall商城-订单(Order)表数据库访问层" />
+              <option name="fullColumn">
+                <list />
+              </option>
+              <option name="name" value="OrderMapper" />
+              <option name="preName" value="" />
+              <option name="saveModelName" value="" />
+              <option name="savePackageName" value="" />
+              <option name="savePath" value="" />
+              <option name="templateGroupName" value="" />
+            </TableInfoDTO>
+          </value>
+        </entry>
         <entry key="information_schema.COLUMN_PRIVILEGES">
           <value>
             <TableInfoDTO>

@@ -72,7 +72,7 @@ public class LoginServiceImpl implements LoginService {
             return ResponseResult.errorResult(AppHttpCodeEnum.ACCOUNT_LOCKED);
         }
         //删除redis中的用户信息
-        redisCache.deleteObject("bloglogin:" + userId);
+        redisCache.deleteObject("NMLogin:" + userId);
         return ResponseResult.okResult();
     }
 
