@@ -13,6 +13,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -141,6 +142,9 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     public ResponseResult addGoods(Goods goods) {
         Long userId = SecurityUtils.getUserId();
         goods.setUpdateBy(userId);
+        goods.setCreateBy(userId);
+        goods.setCreateTime(new Date());
+        goods.setUpdateTime(new Date());
         boolean save = save(goods);
         return save
                 ? ResponseResult.okResult(goods)

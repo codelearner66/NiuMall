@@ -4,10 +4,12 @@ package com.hechi.niumall.controller.commonController;
 import com.hechi.niumall.result.ResponseResult;
 import com.hechi.niumall.service.SysUserService;
 import com.hechi.niumall.utils.RedisCache;
+import com.hechi.niumall.utils.TxyunUtils;
 import com.hechi.niumall.utils.WebSocketServer;
 import com.hechi.niumall.vo.todoListVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,11 +20,14 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @RequestMapping("/common")
+@PreAuthorize("hasAnyAuthority('root','admin')")
 public class commonUtilsController {
     @Autowired
     SysUserService userService;
     @Autowired
     RedisCache redisCache;
+    @Autowired
+    TxyunUtils txyunUtils;
 
     @GetMapping("/getLoginIp")
     public ResponseResult getLoginIp(HttpServletRequest request) {
@@ -146,4 +151,5 @@ public class commonUtilsController {
         redisCache.setCacheList("TODOLIST", todolist);
         return ResponseResult.okResult();
     }
+
 }

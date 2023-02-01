@@ -80,7 +80,31 @@ public class TxyunUtils {
         localFile = File.createTempFile("temp", "jpg");
         file.transferTo(localFile);
         String replace = UUID.randomUUID().toString().replace("-", "");
-        return this.doUpdate(String.valueOf(localFile), prefix+replace+".jpg");
+        String s = this.doUpdate(String.valueOf(localFile), prefix + replace + ".jpg");
+        localFile.delete();
+        return s;
+    }
+    public  String doUploadVideos(MultipartFile file, String prefix) throws IOException {
+        log.info("文件上传！");
+        //文件校验
+        String originalFilename = file.getOriginalFilename();
+        if (!originalFilename.endsWith(".mp4")&&!originalFilename.endsWith(".jpeg")){
+            throw  new RuntimeException("文件格式不正确！");
+        }
+        long size = file.getSize();
+        if (size >1024*1024*100) {
+            throw new RuntimeException("文件大小超出规定100MB");
+        }
+        //校验完成后 使用File.createTempFile(prefix,subfix)
+        // 创建一个临时文件 将file 写入到临时文件 然后再由 腾讯云api进行上传
+        //将上传结果返回
+        File localFile;
+        localFile = File.createTempFile("temp", "mp4");
+        file.transferTo(localFile);
+        String replace = UUID.randomUUID().toString().replace("-", "");
+        String s = this.doUpdate(String.valueOf(localFile), prefix + replace + ".mp4");
+        localFile.delete();
+        return s;
     }
 
     /**

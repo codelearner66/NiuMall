@@ -40,6 +40,4 @@ public class Niuinfo  implements Serializable {
     //发送时间
     private Date sendtime;
 
-
-
 }
