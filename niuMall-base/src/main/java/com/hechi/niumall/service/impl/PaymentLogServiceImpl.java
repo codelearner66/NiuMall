@@ -84,7 +84,6 @@ public class PaymentLogServiceImpl extends ServiceImpl<PaymentLogMapper, Payment
         paymentLog.setTotalPrice(Double.valueOf(totalAmount));
 
         paymentLog.setPayLogSubject(subject);
-        //todo 动态修改
         paymentLog.setPayment("支付宝支付");
 
         paymentLog.setPaymentName("支付宝支付");

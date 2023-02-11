@@ -110,7 +110,7 @@ public class LoginController {
             String [] to={"553378997@qq.com"};
 //            mailUtils.thymeleafEmail(to, "这是一封测试邮件主题", emailParam, "mailTest", "static/images/01.jpg");
 //        } catch (Exception e) {
-//            // TODO Auto-generated catch block
+//            //  Auto-generated catch block
 //            e.printStackTrace();
 //        }
        // mailUtils.sentMailCode(to[0],"123456");

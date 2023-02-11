@@ -6,8 +6,10 @@ import com.hechi.niumall.utils.MessageUtils;
 import com.hechi.niumall.utils.RedisCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -26,18 +28,26 @@ public class MessageServiceImpl implements MessageService {
     MailUtils mailUtils;
     private  static  final String PRE ="message";
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void sentMessage(String phonenumber) throws Exception {
-        //todo 做幂等性 防止多刷
-        Random random = new Random();
-        int code = random.nextInt(100000);
-        messageUtils.sentMessage(phonenumber,Integer.toString(code));
-        redisCache.setCacheObject(PRE+phonenumber,code,1000, TimeUnit.MINUTES);
+        // 做幂等性 防止多刷
+        Object cacheObject = redisCache.getCacheObject(PRE + phonenumber);
+        if (Objects.isNull(cacheObject)) {
+            Random random = new Random();
+            int code = random.nextInt(100000);
+            messageUtils.sentMessage(phonenumber,Integer.toString(code));
+            redisCache.setCacheObject(PRE+phonenumber,code,1000, TimeUnit.MINUTES);
+        }
     }
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void sentMailCode(String to) throws MessagingException {
-        Random random = new Random();
-        int code = random.nextInt(100000);
-        mailUtils.sentMailCode(to,"niuMaill商城验证码","mailCode",Integer.toString(code));
-        redisCache.setCacheObject(PRE+to,code,1000, TimeUnit.MINUTES);
+        Object cacheObject = redisCache.getCacheObject(PRE + to);
+        if (Objects.isNull(cacheObject)) {
+            Random random = new Random();
+            int code = random.nextInt(100000);
+            mailUtils.sentMailCode(to,"niuMaill商城验证码","mailCode",Integer.toString(code));
+            redisCache.setCacheObject(PRE+to,code,1000, TimeUnit.MINUTES);
+        }
     }
 }

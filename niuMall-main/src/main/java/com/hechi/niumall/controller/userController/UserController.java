@@ -38,7 +38,7 @@ public class UserController {
     }
     @RequestMapping("/uploadHeader")
     public ResponseResult uploadHeader(MultipartFile file) throws IOException {
-        //todo 修改图片文件后 删之前的图片 并更新数据库
+        // 修改图片文件后 删之前的图片 并更新数据库
         String s =sysUserService.uploadHeader(file);
 
         return ResponseResult.okResult(s);

@@ -2,7 +2,9 @@ package com.hechi.niumall.service;
 
 import com.hechi.niumall.entity.SlideShowItem;
 import com.hechi.niumall.result.ResponseResult;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -37,6 +39,9 @@ public interface SlideShowService {
      */
     ResponseResult updateSlideShow(Integer id,SlideShowItem showItem);
 
+
+    ResponseResult addSlideShow(SlideShowItem showItem);
+
     /**
      * 更新所有轮播图
      * 删除之前的轮播图
@@ -44,4 +49,8 @@ public interface SlideShowService {
      * @return
      */
     ResponseResult updateAllSlideShow(List<SlideShowItem> list);
+
+    ResponseResult addSlideShowImages(MultipartFile file) throws IOException;
+
+    ResponseResult deleteSlideShowImages(String fileName);
 }

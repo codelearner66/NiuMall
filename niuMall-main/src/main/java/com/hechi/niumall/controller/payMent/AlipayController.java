@@ -119,7 +119,7 @@ public class AlipayController {
                 return ResponseResult.errorResult(AppHttpCodeEnum.ALI_PAY_SELL_ERROR);
             }
 
-          // todo 处理业务 修改订单状态 记录支付日志 在订单生成时 放入rabbitMq中利用死信队列做订单超时检测
+          //  处理业务 修改订单状态 记录支付日志 在订单生成时 放入rabbitMq中利用死信队列做订单超时检测
             alipayService.processOrder(params);
             result=true;
         } catch (AlipayApiException e) {

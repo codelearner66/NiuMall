@@ -49,7 +49,7 @@ public class WebSocketController {
         List<NiuinfoVo> allUnreadInfoList = niuinfoService.getAllUnreadInfoList(userId);
         return ResponseResult.okResult(allUnreadInfoList);
     }
-//todo 排除自己 名称和消息对照
+// 排除自己 名称和消息对照
     //分页获取用户历史会话列表
     @GetMapping("/getAllUserList/{pages}")
     public ResponseResult getAllUserList(@PathVariable("pages") Long pages) {
@@ -94,7 +94,7 @@ public class WebSocketController {
     @PostMapping("/addNewInfo")
     public ResponseResult addNewInfo(@RequestBody Niuinfo niuinfo) {
 
-        //todo 用户信息进来以后先入库 后调用 websocket 接口回执到指定用户
+        //用户信息进来以后先入库 后调用 websocket 接口回执到指定用户
         boolean b = niuinfoService.addNewInfo(niuinfo);
         return ResponseResult.okResult();
     }

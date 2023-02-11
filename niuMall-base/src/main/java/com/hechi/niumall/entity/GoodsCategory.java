@@ -1,5 +1,6 @@
 package com.hechi.niumall.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,10 @@ public class GoodsCategory {
 
     //父id
     private Integer pid;
+
+    //父类别名称
+    @TableField(exist = false)
+    private  String pName;
     //icon图标
     private String icon;
     //名称

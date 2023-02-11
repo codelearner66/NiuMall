@@ -90,6 +90,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     /**
      * 查询订单数据
+     *
      * @param userId 用户id
      * @param page   页码
      * @param status 订单状态
@@ -97,29 +98,31 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
      */
     private ResponseResult getResult(Long userId, int page, int... status) {
         LambdaQueryWrapper<Order> queryWrapper = new LambdaQueryWrapper<>();
-        log.info("收到了状态值{}",status);
+        log.info("收到了状态值{}", status);
         queryWrapper.eq(Order::getUserId, userId)
                 .and(orderLambdaQueryWrapper -> {
                     for (int i : status) {
-                        orderLambdaQueryWrapper.or().eq(Order ::getOrderStatus,i);
+                        orderLambdaQueryWrapper.or().eq(Order::getOrderStatus, i);
                     }
                 });
         Page<Order> orderPage = new Page<>(page, 10);
         page(orderPage, queryWrapper);
         return ResponseResult.okResult(orderPage);
     }
+
     private ResponseResult getResult(int page, int... status) {
         LambdaQueryWrapper<Order> queryWrapper = new LambdaQueryWrapper<>();
-        log.info("收到了状态值{}",status);
+        log.info("收到了状态值{}", status);
         queryWrapper.and(orderLambdaQueryWrapper -> {
-                    for (int i : status) {
-                        orderLambdaQueryWrapper.or().eq(Order ::getOrderStatus,i);
-                    }
-                });
+            for (int i : status) {
+                orderLambdaQueryWrapper.or().eq(Order::getOrderStatus, i);
+            }
+        });
         Page<Order> orderPage = new Page<>(page, 10);
         page(orderPage, queryWrapper);
         return ResponseResult.okResult(orderPage);
     }
+
     @Override
     public ResponseResult getOrderByUserIdwithStatus(Long userId, Integer page, int... status) {
         return this.getResult(userId, page, status);
@@ -130,13 +133,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return this.getResult(page, status);
     }
 
-//    通过orderId 获取用户订单
+    //    通过orderId 获取用户订单
     @Override
     public ResponseResult queryOrderByOrderId(String orderId) {
         LambdaQueryWrapper<Order> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Order ::getOrderId,orderId);
-        Page<Order> page1 = new Page<>(1,10);
-        page(page1,queryWrapper);
+        queryWrapper.eq(Order::getOrderId, orderId);
+        Page<Order> page1 = new Page<>(1, 10);
+        page(page1, queryWrapper);
         return ResponseResult.okResult(page1);
     }
 
@@ -195,11 +198,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setPostFee("0.00");
         Date date = new Date();
         order.setCreateTime(date);
-//新建订单完成后 更新商品信息 库存减去相应的数量 销量增加相应的数量
+
         //保存订单
         save(order);
-//  更新商品信息
+       //  更新商品信息
+        // 新建订单完成后 更新商品信息 库存减去相应的数量 销量增加相应的数量
         goods1.setSalesCount(goods1.getSalesCount() + goods.getNum());
+        if (goods1.getInventory() - goods.getNum() < 0) {
+            throw new RuntimeException("库存不足");
+        }
         goods1.setInventory(goods1.getInventory() - goods.getNum());
         Random random = new Random();
         goods1.setAccessCount(goods1.getAccessCount() + random.nextInt(10));
@@ -246,7 +253,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Override
     public ResponseResult getAllOrder(Integer pages) {
-        return getResult(pages, 1,2,3,4,5,6,7,8,9,10);
+        return getResult(pages, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
 
 }

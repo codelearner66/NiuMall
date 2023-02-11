@@ -99,7 +99,7 @@ public class EmailCodeAuthenticationFilter  extends AbstractAuthenticationProces
      * @return
      */
     private boolean checkCode(String code,String email) {
-        //todo 获取储存在redis中的验证码进行比较
+        //获取储存在redis中的验证码进行比较
         String serviceCode = redisCache.getCacheObject(MESSAGE + email).toString();
 
         return Objects.nonNull(serviceCode) && serviceCode.equals(code);

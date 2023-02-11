@@ -18,12 +18,18 @@ public interface GoodsCategoryService extends IService<GoodsCategory> {
      */
    public   ResponseResult getRootCategory();
 
+    public   ResponseResult getAdminRootCategory();
+
     /**
      * 通过根类别查询子类
      * @param id
      * @return
      */
    public  ResponseResult getGoodsCategoryById(int id);
+
+    public  ResponseResult getAdminGoodsCategoryById(int id);
+
+    public  ResponseResult getGoodsCategory(int pages);
 
     /**
      * 添加新的类别
@@ -32,9 +38,13 @@ public interface GoodsCategoryService extends IService<GoodsCategory> {
      */
    public  ResponseResult addGoodsCategory(GoodsCategory category);
 
+   ResponseResult deleteGoodsCategory(GoodsCategory category);
+
     /**
      * 通过id 更新类别
      */
-    public  ResponseResult updateGoodsCategorById(GoodsCategory category);
+    public  ResponseResult
+
+    updateGoodsCategorById(GoodsCategory category);
 }
 
