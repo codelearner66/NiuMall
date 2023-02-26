@@ -87,5 +87,7 @@ public interface OrderService extends IService<Order> {
     ResponseResult queryOrderByOrderId(String orderId);
 
     ResponseResult shopped(Order order);
+
+   Order getOrderByUserIdandGoodsId(Long userid,Long GoodsId);
 }
 

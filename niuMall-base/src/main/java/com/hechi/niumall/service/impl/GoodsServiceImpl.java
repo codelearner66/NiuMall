@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
  * @author ccx
  * @since 2022-07-25 10:06:02
  */
+//todo 商品下架后仍可以查询到
 @Service("goodsService")
 public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements GoodsService {
     @Override
@@ -40,9 +41,10 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         return Objects.isNull(one)
                 ? ResponseResult.errorResult(AppHttpCodeEnum.GOODS_IS_NOT_EXTST)
                 : ResponseResult.okResult(one);
+
     }
 
-    @Cacheable(value = "goods",key = "#id")
+    @Cacheable(value = "goods", key = "#id")
     @Override
     public ResponseResult getGoodsDetilsById(Integer id) {
         LambdaQueryWrapper<Goods> lambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -55,7 +57,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     public ResponseResult getGoodsDetilsByKey(String key, Integer pages) {
 
         LambdaQueryWrapper<Goods> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.like(Goods::getTitle, key).or().like(Goods::getSimpleDesc, key);
+        lambdaQueryWrapper.eq(Goods::getIsShelves, 1).like(Goods::getTitle, key).or().like(Goods::getSimpleDesc, key);
         //todo 防止数据过多 可使用分页查询
         Page<Goods> page1 = new Page<>(pages, 20);
         page(page1, lambdaQueryWrapper);
@@ -109,7 +111,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         return ResponseResult.errorResult(AppHttpCodeEnum.CATEGORY_GOODS_ISNULL);
     }
 
-    @Cacheable(value = "ListByCategory",key = "#cId+'L'+#pages")
+    @Cacheable(value = "ListByCategory", key = "#cId+'L'+#pages")
     @Override
     public ResponseResult getGoodsDetilsListByCategory(Integer cId, int pages) {
 
@@ -125,12 +127,12 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         return ResponseResult.errorResult(AppHttpCodeEnum.CATEGORY_GOODS_NOT_EXIST);
     }
 
-    @Cacheable(value = "mainPages",key = "'page'+#pages")
+    @Cacheable(value = "mainPages", key = "'page'+#pages")
     @Override
     public ResponseResult getPages(int pages) {
         LambdaQueryWrapper<Goods> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.between(Goods::getCategory, 1, 6)
-                    .orderByDesc(Goods::getAccessCount);
+                .orderByDesc(Goods::getAccessCount);
         Page<Goods> page1 = new Page<>(pages, 50);
         page(page1, queryWrapper);
         //封装分页结果vo
@@ -151,7 +153,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
                 : ResponseResult.errorResult(AppHttpCodeEnum.GOODS_ADD_ERROR);
     }
 
-    @CacheEvict(value = "goods",key = "#goods.id")
+    @CacheEvict(value = "goods", key = "#goods.id")
     @Override
     public ResponseResult updateGoods(Goods goods) {
         boolean b = updateById(goods);
@@ -160,13 +162,13 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
                 : ResponseResult.errorResult(AppHttpCodeEnum.GOODS_UPDATE_ERROR);
     }
 
-    @CacheEvict(value = "goods",key = "#goods.id")
+    @CacheEvict(value = "goods", key = "#goods.id")
     @Override
     public ResponseResult deleteGoods(Goods goods) {
         return this.deleteGoodsById(Long.valueOf(goods.getId()));
     }
 
-    @CacheEvict(value = "goods",key = "#goods.id")
+    @CacheEvict(value = "goods", key = "#goods.id")
     @Override
     public ResponseResult deleteGoodsById(Long id) {
         boolean b = removeById(id);

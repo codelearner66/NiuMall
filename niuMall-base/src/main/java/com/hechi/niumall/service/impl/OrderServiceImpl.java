@@ -256,4 +256,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return getResult(pages, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
 
+    @Override
+    public Order getOrderByUserIdandGoodsId(Long userid, Long goodsId) {
+        LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Order::getUserId,userid).eq(Order ::getGoodsId,goodsId).eq(Order ::getOrderStatus,5);
+        wrapper.last("limit 1");
+        return getOne(wrapper);
+    }
 }

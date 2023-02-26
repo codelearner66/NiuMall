@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
  * 阿里云 短信服务工具类
  */
 @Component
-
 public class MessageUtils {
     private final String accessKeyId="LTAI5tJfVqaZzHnxvKmBvUFe";
     private final String accessKeySecret="Gj7lOqYQdQk3w7OHNnZTmBeBpXiEuT";

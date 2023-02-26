@@ -36,8 +36,9 @@ public class MessageServiceImpl implements MessageService {
             Random random = new Random();
             int code = random.nextInt(100000);
             messageUtils.sentMessage(phonenumber,Integer.toString(code));
-            redisCache.setCacheObject(PRE+phonenumber,code,1000, TimeUnit.MINUTES);
+            redisCache.setCacheObject(PRE+phonenumber,code,3, TimeUnit.MINUTES);
         }
+        messageUtils.sentMessage(phonenumber,cacheObject.toString());
     }
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -47,7 +48,8 @@ public class MessageServiceImpl implements MessageService {
             Random random = new Random();
             int code = random.nextInt(100000);
             mailUtils.sentMailCode(to,"niuMaill商城验证码","mailCode",Integer.toString(code));
-            redisCache.setCacheObject(PRE+to,code,1000, TimeUnit.MINUTES);
+            redisCache.setCacheObject(PRE+to,code,5, TimeUnit.MINUTES);
         }
+        mailUtils.sentMailCode(to,"niuMaill商城验证码","mailCode",cacheObject.toString());
     }
 }

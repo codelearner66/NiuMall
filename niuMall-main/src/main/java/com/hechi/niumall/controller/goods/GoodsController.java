@@ -22,7 +22,6 @@ public class GoodsController {
     GoodsService goodsService;
     @Autowired
     TxyunUtils txyunUtils;
-
     {
         map.put("1", "phone/");
         map.put("2", "computer/");
