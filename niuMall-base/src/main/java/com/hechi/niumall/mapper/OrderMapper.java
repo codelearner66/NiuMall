@@ -19,5 +19,8 @@ import java.util.List;
 public interface OrderMapper extends BaseMapper<Order> {
 
     public List<OrderListforSell> getListforSelL();
+
+    Double getSalePrice();
+    Double getDailySalePrice();
 }
 

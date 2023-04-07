@@ -77,6 +77,7 @@ public class UserSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/getChildCategory",
                 "/getSlideShows",
                 "/getPages",
+                "/getModifyNotification",
                 "/pay/api/trade/notify",
                 "/socket/api/messageService/**"};
         // 定制请求的授权规则 //关闭csrf

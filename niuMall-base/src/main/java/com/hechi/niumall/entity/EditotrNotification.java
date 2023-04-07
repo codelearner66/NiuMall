@@ -26,6 +26,6 @@ public class EditotrNotification {
     private Integer isDeleted;
     //创建人id
     private Long createBy;
-    //发送时间
+    //创建时间
     private Date createDate;
 }

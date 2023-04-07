@@ -66,7 +66,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
                 //去重
                 .distinct()
                 //过滤 有存货才能使用
-                .filter(item -> item.getInventory() > 0)
+                .filter(item -> item.getInventory() > 0 && item.getIsShelves() < 1)
                 //排序
                 .sorted((g1, g2) -> {
                     //排序按照销量 销量相等按照访问量

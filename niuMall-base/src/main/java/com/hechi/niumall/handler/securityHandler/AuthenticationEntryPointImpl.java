@@ -21,8 +21,7 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         authException.printStackTrace();
-        //InsufficientAuthenticationException
-        //BadCredentialsException
+        //InsufficientAuthenticationException   //BadCredentialsException
         ResponseResult result;
         if(authException instanceof BadCredentialsException){
             result = ResponseResult.errorResult(AppHttpCodeEnum.LOGIN_TOKEN_ERROR,AppHttpCodeEnum.LOGIN_TOKEN_ERROR.getMsg());

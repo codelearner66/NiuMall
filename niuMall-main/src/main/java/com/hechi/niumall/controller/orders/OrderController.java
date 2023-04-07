@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -46,6 +47,11 @@ public class OrderController {
     public ResponseResult getuserOrderpayedByUserId(@PathVariable Integer page) {
         Long userId = SecurityUtils.getUserId();
         return orderService.getOrderByUserIdForPayed(userId, page);
+    }
+
+    @RequestMapping("/getOrderCountofPayed")
+    public ResponseResult getOrderCountofPayed(){
+      return   orderService.getOrderCountofPayed();
     }
 
     /**
@@ -125,6 +131,7 @@ public class OrderController {
     ResponseResult confirmReceipt(@RequestBody Order order) {
         if (order.getOrderId() != null) {
             order.setOrderStatus(SystemConstants.ORDER_DONE);
+            order.setEndTime(new Date());
             return orderService.updateOrder(order);
         } else {
             return ResponseResult.errorResult(AppHttpCodeEnum.ORDER_IS_NULL);

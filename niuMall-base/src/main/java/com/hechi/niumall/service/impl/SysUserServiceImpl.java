@@ -172,7 +172,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         return  b;
     }
-
     @Transactional(rollbackFor = Exception.class)
     @Override
     public String uploadHeader(MultipartFile file) throws IOException {

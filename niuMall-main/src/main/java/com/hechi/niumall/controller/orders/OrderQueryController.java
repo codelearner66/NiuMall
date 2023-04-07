@@ -15,6 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+import java.util.Objects;
+
 @Slf4j
 @RestController
 @RequestMapping("/manage")
@@ -27,16 +30,30 @@ public class OrderQueryController {
     AlipayService alipayService;
     @Autowired
     BalancePayService balancePayService;
-//    //品类销售图
-//    @GetMapping("/getSalesByCategory")
-//    public ResponseResult getSalesByCategory(){
-//
-//
-//        orderService.getSalesByCategory();
-//
-//        return ResponseResult.okResult();
-//    }
+    //品类销售图
+    @GetMapping("/getSalesByCategory")
+    public ResponseResult getSalesByCategory(){
+       Map<String,Double> map= orderService.getSalesByCategory();
+        return ResponseResult.okResult(map);
+    }
 
+    /**
+     * 查询总消费额
+     * @return
+     */
+    @GetMapping("/getSale")
+    public ResponseResult getSale(){
+         Double sale = orderService.getSale();
+         return Objects.isNull(sale) ? ResponseResult.errorResult(AppHttpCodeEnum.NO_OPERATOR_AUTH):ResponseResult.okResult(sale);
+    }
+    /**
+     * 查询今日消费额
+     */
+    @GetMapping("/getDaylySale")
+    public ResponseResult getDaylySale(){
+         Double dailySale = orderService.getDailySale();
+        return Objects.isNull(dailySale) ? ResponseResult.errorResult(AppHttpCodeEnum.NO_OPERATOR_AUTH):ResponseResult.okResult(dailySale);
+    }
     /**
      * 管理员查询用户未支付订单
      *
@@ -104,6 +121,7 @@ public class OrderQueryController {
     public ResponseResult shopped(@PathVariable String orderId){
         Order order =new Order();
         order.setOrderId(orderId);
+
         return orderService.shopped(order);
     }
 

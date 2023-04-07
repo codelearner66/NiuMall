@@ -10,9 +10,22 @@
     <select id="getListforSelL" resultType="com.hechi.niumall.vo.OrderListforSell">
         SELECT *, sum(payment) as sum
         from `order`
-        WHERE order_status in (2, 3, 4, 5, 6)
+        WHERE order_status in (2, 3, 4, 5)
         GROUP BY goods_id
         ORDER BY sum DESC
         LIMIT 10
+    </select>
+
+    <select id="getSalePrice" resultType="java.lang.Double">
+        select sum(payment) as sum
+        from `order`
+        WHERE order_status in (2, 3, 4, 5)
+    </select>
+
+    <select id="getDailySalePrice" resultType="java.lang.Double">
+        select sum(payment) as sum
+        from `order`
+        WHERE order_status in (2, 3, 4, 5)
+        and to_days(now())-to_days(order.payment_time)=0
     </select>
 </mapper>

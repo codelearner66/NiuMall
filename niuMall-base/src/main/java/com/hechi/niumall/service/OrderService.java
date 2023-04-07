@@ -7,6 +7,7 @@ import com.hechi.niumall.vo.OrderListforSell;
 import com.hechi.niumall.vo.orderVo;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -17,59 +18,71 @@ import java.util.List;
  */
 public interface OrderService extends IService<Order> {
     /**
-     *  通过id获取订单
-      */
+     * 通过id获取订单
+     */
 
     ResponseResult getOrderById(Long id);
+
     /**
-     *  通过 用户id 获取订单
-      */
-    ResponseResult getOrderByUserId(Long userId,Integer pages);
+     * 通过 用户id 获取订单
+     */
+    ResponseResult getOrderByUserId(Long userId, Integer pages);
 
     /**
      * 分页查询未支付订单
+     *
      * @param userId 用户id
-     * @param page 页码
+     * @param page   页码
      * @return 分页数据
      */
-    ResponseResult getOrderByUserIdFornotPay(Long userId,int page);
+    ResponseResult getOrderByUserIdFornotPay(Long userId, int page);
 
     /**
      * 分页查询已支付订单
+     *
      * @param userId 用户 id
-     * @param page 分页
-     * @return  分页数据
+     * @param page   分页
+     * @return 分页数据
      */
-    ResponseResult getOrderByUserIdForPayed(Long userId,int page);
+    ResponseResult getOrderByUserIdForPayed(Long userId, int page);
+
+    /**
+     * 已支付未发货数量
+     *
+     * @return 数量
+     */
+    ResponseResult getOrderCountofPayed();
 
     /**
      * 查询用户订单
+     *
      * @param userId 用户id
-     * @param page 页码
+     * @param page   页码
      * @param status 订单状态
      * @return
      */
-    ResponseResult getOrderByUserIdwithStatus(Long userId,Integer page,int... status);
+    ResponseResult getOrderByUserIdwithStatus(Long userId, Integer page, int... status);
 
 //    ResponseResult getOrderByUserIdForPayed(Long userId,int page);
+
     /**
      * 生成订单
-      */
+     */
 
     ResponseResult createOrder(orderVo goods);
 
     /**
      * 更新订单
-      */
+     */
 
     ResponseResult updateOrder(Order order);
-
 
 
     Order getOrderByOrderNo(String outTradeNo);
 
     /**
      * 获取分类销量前十
+     *
      * @return
      */
     public List<OrderListforSell> getListforSelL();
@@ -77,6 +90,7 @@ public interface OrderService extends IService<Order> {
 
     /**
      * 管理员获取所有用户订单
+     *
      * @param pages 分页页码
      * @return 用户订单信息
      */
@@ -88,6 +102,16 @@ public interface OrderService extends IService<Order> {
 
     ResponseResult shopped(Order order);
 
-   Order getOrderByUserIdandGoodsId(Long userid,Long GoodsId);
+    Order getOrderByUserIdandGoodsId(Long userid, Long GoodsId);
+
+    Map<String, Double> getSalesByCategory();
+
+    /**
+     * 获取销售总额
+     * @return 销售额
+     */
+    Double  getSale();
+
+    Double getDailySale();
 }
 

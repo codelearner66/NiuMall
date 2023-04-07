@@ -7,10 +7,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hechi.niumall.constants.SystemConstants;
 import com.hechi.niumall.entity.Goods;
+import com.hechi.niumall.entity.GoodsCategory;
 import com.hechi.niumall.entity.Order;
 import com.hechi.niumall.enums.AppHttpCodeEnum;
 import com.hechi.niumall.mapper.OrderMapper;
 import com.hechi.niumall.result.ResponseResult;
+import com.hechi.niumall.service.GoodsCategoryService;
 import com.hechi.niumall.service.GoodsService;
 import com.hechi.niumall.service.OrderService;
 import com.hechi.niumall.service.UserAddrService;
@@ -23,9 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * niumall商城-订单(Order)表服务实现类
@@ -43,6 +43,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Autowired
     OrderMapper orderMapper;
+     @Autowired
+    GoodsCategoryService categoryService;
 
     @Override
     public ResponseResult getOrderById(Long id) {
@@ -148,6 +150,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return this.getResult(userId, page, SystemConstants.ORDER_PAID);
     }
 
+    @Override
+    public ResponseResult getOrderCountofPayed() {
+        LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Order::getOrderStatus, SystemConstants.ORDER_PAID).or((wrapper1) -> wrapper1.eq(Order::getOrderStatus, SystemConstants.ORDER_UNSHIPPED));
+        final long count = count(wrapper);
+        return ResponseResult.okResult(count);
+    }
+
     /**
      * 根据订单编号获取订单信息
      *
@@ -201,7 +211,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         //保存订单
         save(order);
-       //  更新商品信息
+        //  更新商品信息
         // 新建订单完成后 更新商品信息 库存减去相应的数量 销量增加相应的数量
         goods1.setSalesCount(goods1.getSalesCount() + goods.getNum());
         if (goods1.getInventory() - goods.getNum() < 0) {
@@ -259,8 +269,51 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     public Order getOrderByUserIdandGoodsId(Long userid, Long goodsId) {
         LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Order::getUserId,userid).eq(Order ::getGoodsId,goodsId).eq(Order ::getOrderStatus,5);
+        wrapper.eq(Order::getUserId, userid).eq(Order::getGoodsId, goodsId).eq(Order::getOrderStatus, 5);
         wrapper.last("limit 1");
         return getOne(wrapper);
+    }
+
+    @Override
+    public Map<String, Double> getSalesByCategory() {
+        LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Order::getOrderStatus, 2)
+                .or().eq(Order::getOrderStatus, 3)
+                .or().eq(Order::getOrderStatus, 4)
+                .or().eq(Order::getOrderStatus, 5);
+        List<Order> list = list(wrapper);
+        Map<String, Double> map = new HashMap<>();
+        list.forEach(item -> {
+            Goods goods = JSON.parseObject(item.getOrderContent(), Goods.class);
+            String s = goods.getCategory().toString();
+            Double tem=Double.parseDouble(item.getPayment());
+            if (map.containsKey(s)) {
+                 tem += map.get(s) ;
+            }
+            map.put(s, tem);
+        });
+        log.info("输出map{}",map);
+         ResponseResult rootCategory = categoryService.getRootCategory();
+        List<GoodsCategory> categoryList = (List<GoodsCategory>)rootCategory.getData();
+        for (GoodsCategory category : categoryList) {
+            Double tempMoney = map.get(category.getId());
+            map.remove(category.getId());
+            map.put(category.getGoodsCategoryName(), tempMoney);
+        }
+        return map;
+    }
+
+    @Override
+    public Double getSale() {
+        return orderMapper.getSalePrice();
+    }
+
+    @Override
+    public Double getDailySale() {
+         Double dailySalePrice = orderMapper.getDailySalePrice();
+         if (Objects.isNull(dailySalePrice)|| dailySalePrice.isNaN()){
+             dailySalePrice=0.0D;
+         }
+        return dailySalePrice;
     }
 }

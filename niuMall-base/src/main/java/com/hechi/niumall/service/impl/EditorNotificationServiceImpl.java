@@ -120,7 +120,7 @@ public class EditorNotificationServiceImpl implements EditorNotificationService 
                 resoult.addAll(cacheList);
             } else {
                 List<EditotrNotification> collect = cacheList.stream()
-                        .filter(item -> item.getFlag() == 1 || item.getType() == 1)
+                        .filter(item -> item.getFlag() == 0 && item.getType() == 1)
                         .collect(Collectors.toList());
                 resoult.addAll(collect);
             }
