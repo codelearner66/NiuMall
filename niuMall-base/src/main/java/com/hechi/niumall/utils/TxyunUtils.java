@@ -31,8 +31,8 @@ public class TxyunUtils {
 
     TxyunUtils() {
         // 1 初始化用户身份信息（secretId, secretKey）。
-        String secretId = "AKIDywoSxFKSO9h2B6oKdlgQxHNErGQRFpCL";
-        String secretKey = "yjHbidKn4A5oJaeV8XjiT1LUQ9h3B6nG";
+        String secretId = "******";
+        String secretKey = "*****";
         COSCredentials cred = new BasicCOSCredentials(secretId, secretKey);
 
         Region region = new Region("ap-chengdu");
